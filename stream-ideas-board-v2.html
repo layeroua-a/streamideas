@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Доска идей для стрима</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.85em%22 font-size=%2290%22>🎛️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#120c1f;
+    --bg-2:#180f27;
+    --panel:#1e1633;
+    --panel-2:#271c42;
+    --panel-hi:#31234f;
+    --border: rgba(228,220,255,.08);
+    --border-hi: rgba(228,220,255,.16);
+    --text:#f4f0ff;
+    --text-dim:#af a3cf;
+    --text-dim:#ada0cf;
+    --text-faint:#7c6f9b;
+    --accent:#ff9d4d;
+    --accent-ink:#2a1400;
+    --accent-2:#5ee6c0;
+    --danger:#ff5f7e;
+    --cat-coop:#ff6f91;
+    --cat-sites:#5ee6c0;
+    --cat-chat:#ffcf5c;
+    --radius-sm:10px;
+    --radius-md:16px;
+    --radius-lg:26px;
+    --shadow-soft: 0 20px 45px -28px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(1100px 600px at 85% -10%, #2c1c4d 0%, transparent 55%),
+      radial-gradient(900px 500px at -10% 20%, #1a2a3d 0%, transparent 50%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Plus Jakarta Sans',sans-serif;
+    line-height:1.6;
+    font-size:15px;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Unbounded',sans-serif;}
+  a{color:inherit;}
+  button{font-family:inherit;}
+  input,select,textarea{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--accent-2); outline-offset:2px;}
+  .icon{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+  .icon.filled{fill:currentColor;stroke:none;}
+
+  /* ---------- APP SHELL ---------- */
+  .app-shell{display:flex;min-height:100vh;align-items:stretch;}
+
+  .sidebar{
+    width:96px;flex-shrink:0;
+    display:flex;flex-direction:column;align-items:center;
+    padding:26px 0;gap:28px;
+    background:linear-gradient(180deg, var(--panel), var(--bg-2));
+    border-right:1px solid var(--border);
+  }
+  .brand{
+    width:44px;height:44px;border-radius:14px;
+    background:linear-gradient(155deg, var(--accent), #ff6f3d);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--accent-ink);
+    box-shadow:0 12px 24px -10px rgba(255,157,77,.55);
+  }
+  .brand .icon{width:22px;height:22px;stroke-width:2.1;}
+  .nav-tabs{display:flex;flex-direction:column;gap:10px;width:100%;align-items:center;}
+  .nav-tab{
+    width:72px;padding:12px 4px 10px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    background:transparent;border:1px solid transparent;border-radius:var(--radius-sm);
+    color:var(--text-faint);cursor:pointer;
+    transition:background .15s ease,color .15s ease,border-color .15s ease;
+  }
+  .nav-tab .icon{width:20px;height:20px;}
+  .nav-tab span{font-size:11.5px;font-weight:600;}
+  .nav-tab:hover{color:var(--text);background:var(--panel-2);}
+  .nav-tab.active{color:var(--accent-ink);background:var(--accent);border-color:var(--accent);}
+  .sidebar-foot{margin-top:auto;color:var(--text-faint);font-size:10.5px;text-align:center;padding:0 10px;}
+
+  .main{flex:1;min-width:0;padding:40px 44px 70px;}
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  .page-head{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between;margin-bottom:26px;}
+  .page-head h1{font-size:clamp(26px,3vw,34px);margin:0 0 8px;font-weight:700;letter-spacing:-.01em;}
+  .page-head p{margin:0;color:var(--text-dim);max-width:480px;font-size:14.5px;}
+  .add-btn{
+    display:inline-flex;align-items:center;gap:8px;flex-shrink:0;
+    background:var(--accent);color:var(--accent-ink);
+    border:none;border-radius:999px;padding:12px 20px 12px 16px;
+    font-weight:700;font-size:14px;cursor:pointer;
+    box-shadow:0 14px 28px -14px rgba(255,157,77,.6);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .add-btn:hover{transform:translateY(-2px);box-shadow:0 18px 32px -14px rgba(255,157,77,.75);}
+
+  /* ---------- TOOLBAR ---------- */
+  .toolbar{
+    display:flex;flex-direction:column;gap:12px;
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border);border-radius:var(--radius-md);
+    padding:16px 18px;margin-bottom:22px;
+  }
+  .toolbar-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .search-field{
+    position:relative;flex:1;min-width:200px;
+  }
+  .search-field .icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-faint);}
+  .search-field input{
+    width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);
+    padding:10px 14px 10px 38px;border-radius:999px;font-size:13.5px;
+  }
+  .search-field input::placeholder{color:var(--text-faint);}
+  .select-field{position:relative;}
+  .select-field select{
+    appearance:none;background:var(--bg-2);border:1px solid var(--border);color:var(--text);
+    padding:10px 34px 10px 14px;border-radius:999px;font-size:13.5px;cursor:pointer;
+  }
+  .select-field::after{
+    content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;
+    border-right:1.6px solid var(--text-faint);border-bottom:1.6px solid var(--text-faint);
+    transform:translateY(-65%) rotate(45deg);pointer-events:none;
+  }
+  select option{background:#241a3d;color:var(--text);}
+  .seg{display:flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;background:var(--bg-2);}
+  .seg button{
+    background:transparent;border:none;color:var(--text-faint);padding:9px 13px;
+    cursor:pointer;display:flex;align-items:center;gap:6px;
+  }
+  .seg button.active{background:var(--accent);color:var(--accent-ink);}
+  .icon-toggle{
+    background:var(--bg-2);border:1px solid var(--border);color:var(--text-faint);
+    width:38px;height:38px;border-radius:999px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .15s ease,color .15s ease,border-color .15s ease;
+  }
+  .icon-toggle.active{background:var(--accent-2);border-color:var(--accent-2);color:#04231c;}
+
+  .chips-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--bg-2);border:1px solid var(--border);color:var(--text-dim);
+    padding:8px 14px;border-radius:999px;font-size:13px;cursor:pointer;
+    transition:background .15s ease,color .15s ease,border-color .15s ease;
+  }
+  .chip .icon{width:14px;height:14px;}
+  .chip:hover{border-color:var(--border-hi);color:var(--text);}
+  .chip.active{background:var(--chip-color, var(--accent));border-color:var(--chip-color, var(--accent));color:#1a0f00;font-weight:600;}
+
+  .count{font-size:13px;color:var(--text-faint);margin:2px 2px 16px;}
+
+  /* ---------- GRID / CARDS ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:20px;}
+  .grid.list-view{grid-template-columns:1fr;max-width:820px;}
+  .grid.list-view .card{flex-direction:row;align-items:stretch;}
+  .grid.list-view .card-media{width:150px;height:auto;border-radius:var(--radius-sm) 0 0 var(--radius-sm);flex-shrink:0;}
+  .grid.list-view .card-body{border-radius:0 var(--radius-md) var(--radius-md) 0;}
+
+  .card{
+    display:flex;flex-direction:column;
+    background:linear-gradient(165deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border);border-radius:var(--radius-md);
+    overflow:hidden;
+    box-shadow:var(--shadow-soft);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .card:hover{transform:translateY(-5px);border-color:var(--border-hi);box-shadow:0 26px 50px -22px color-mix(in srgb, var(--cat, var(--accent)) 45%, transparent);}
+  .card.is-played{opacity:.55;}
+  .card.is-played .card-title{text-decoration:line-through;text-decoration-color:var(--text-faint);}
+
+  .card-media{
+    position:relative;height:132px;flex-shrink:0;
+    background-size:cover;background-position:center;
+    background-color:color-mix(in srgb, var(--cat, var(--accent)) 20%, var(--panel-2));
+    display:flex;align-items:center;justify-content:center;
+  }
+  .card-media .media-icon{width:46px;height:46px;color:var(--cat, var(--accent));opacity:.45;stroke-width:1.4;}
+  .media-count{
+    position:absolute;bottom:9px;right:9px;
+    background:rgba(10,6,20,.65);backdrop-filter:blur(3px);
+    color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;
+  }
+  .gallery-btn{
+    position:absolute;bottom:9px;left:9px;
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(10,6,20,.65);backdrop-filter:blur(3px);
+    color:#fff;border:none;padding:6px 11px;border-radius:999px;
+    font-size:11.5px;font-weight:600;cursor:pointer;
+  }
+  .gallery-btn:hover{background:rgba(10,6,20,.85);}
+  .card-actions{position:absolute;top:9px;right:9px;display:flex;gap:6px;}
+  .card-actions button{
+    width:28px;height:28px;border-radius:999px;border:none;cursor:pointer;
+    background:rgba(10,6,20,.55);backdrop-filter:blur(3px);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .15s ease,color .15s ease,transform .15s ease;
+  }
+  .card-actions button .icon{width:14px;height:14px;}
+  .card-actions button:hover{transform:scale(1.08);}
+  .card-actions .fav-btn.active{background:var(--accent);color:var(--accent-ink);}
+  .card-actions .played-btn.active{background:var(--accent-2);color:#04231c;}
+
+  .card-body{padding:16px 17px 17px;display:flex;flex-direction:column;gap:9px;flex:1;}
+  .cat-badge{
+    align-self:flex-start;display:inline-flex;align-items:center;gap:6px;
+    font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px;
+    background:color-mix(in srgb, var(--cat, var(--accent)) 18%, transparent);
+    color:var(--cat, var(--accent));border:1px solid color-mix(in srgb, var(--cat, var(--accent)) 40%, transparent);
+  }
+  .cat-badge .icon{width:12.5px;height:12.5px;}
+  .card-title{font-size:16.5px;margin:0;font-weight:600;line-height:1.3;}
+  .card-desc{font-size:13px;color:var(--text-dim);margin:0;}
+  .meta-row{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text-faint);}
+  .meta-row span{display:inline-flex;align-items:center;gap:5px;}
+  .meta-row .icon{width:13px;height:13px;}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .tag{font-size:11px;color:var(--text-dim);background:var(--bg-2);border:1px solid var(--border);padding:3px 9px;border-radius:999px;}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:4px;}
+  .card-link{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--accent-2);text-decoration:none;
+  }
+  .card-link .icon{width:13px;height:13px;}
+  .edit-link{
+    display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:var(--text-faint);
+    font-size:12px;cursor:pointer;padding:2px;margin-left:auto;
+  }
+  .edit-link:hover{color:var(--text);}
+  .edit-link .icon{width:13px;height:13px;}
+  .rating-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px;}
+  .rating-label{font-size:11.5px;color:var(--text-faint);}
+  .rating-control{display:flex;align-items:center;gap:2px;}
+  .rating-star{
+    position:relative;width:20px;height:20px;background:none;border:none;padding:0;cursor:pointer;
+    color:rgba(244,240,255,.22);font-size:20px;line-height:1;
+  }
+  .rating-star::before{content:"★";position:absolute;inset:0;color:rgba(244,240,255,.2);}
+  .rating-star::after{
+    content:"★";position:absolute;inset:0;width:var(--fill,0%);overflow:hidden;color:var(--accent);
+  }
+  .rating-star:hover::after{filter:drop-shadow(0 0 8px rgba(255,157,77,.45));}
+  .rating-value{min-width:26px;text-align:right;font-size:12px;font-weight:700;color:var(--accent);}
+
+  .empty{
+    grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-faint);
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+  }
+  .empty .icon{width:34px;height:34px;opacity:.5;}
+
+  /* ---------- ROULETTE VIEW ---------- */
+  .roulette-panel{
+    background:linear-gradient(165deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:34px 30px 30px;display:flex;flex-direction:column;align-items:center;gap:22px;
+  }
+  .reel-window{
+    position:relative;width:100%;max-width:460px;height:288px;overflow:hidden;
+    border-radius:var(--radius-md);background:var(--bg-2);border:1px solid var(--border);
+  }
+  .reel-window::before,.reel-window::after{
+    content:"";position:absolute;left:0;right:0;height:70px;z-index:2;pointer-events:none;
+  }
+  .reel-window::before{top:0;background:linear-gradient(var(--bg-2), transparent);}
+  .reel-window::after{bottom:0;background:linear-gradient(transparent, var(--bg-2));}
+  .reel-center{
+    position:absolute;left:8px;right:8px;top:50%;height:96px;transform:translateY(-50%);
+    border:1.5px solid var(--accent);border-radius:var(--radius-sm);
+    box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 12%, transparent);
+    pointer-events:none;z-index:2;
+  }
+  .reel-track{position:absolute;left:0;right:0;top:0;}
+  .reel-item{
+    height:96px;display:flex;align-items:center;gap:14px;padding:0 18px;
+  }
+  .reel-item .emoji-fallback{font-size:26px;}
+  .reel-item .ri-icon{width:30px;height:30px;color:var(--cat, var(--accent));flex-shrink:0;}
+  .reel-item .ri-title{font-family:'Unbounded',sans-serif;font-size:14.5px;font-weight:600;}
+  .reel-item .ri-cat{font-size:11.5px;color:var(--text-faint);}
+  .reel-item.landed .ri-title{color:var(--accent);}
+
+  .roll-btn{
+    display:inline-flex;align-items:center;gap:9px;
+    background:var(--accent);color:var(--accent-ink);border:none;border-radius:999px;
+    padding:14px 26px;font-weight:700;font-size:14.5px;cursor:pointer;
+    box-shadow:0 16px 30px -14px rgba(255,157,77,.65);
+    transition:transform .15s ease;
+  }
+  .roll-btn:hover:not(:disabled){transform:translateY(-2px);}
+  .roll-btn:disabled{opacity:.6;cursor:default;}
+  .roll-btn .icon{width:18px;height:18px;}
+
+  .result-card{
+    width:100%;max-width:640px;background:var(--bg-2);border:1px solid var(--border);
+    border-radius:var(--radius-md);padding:20px;display:none;gap:16px;
+  }
+  .result-card.show{display:flex;}
+  .result-media{
+    width:120px;height:120px;border-radius:var(--radius-sm);flex-shrink:0;background-size:cover;background-position:center;
+    background-color:color-mix(in srgb, var(--cat, var(--accent)) 20%, var(--panel-2));
+    display:flex;align-items:center;justify-content:center;
+  }
+  .result-media .icon{width:38px;height:38px;color:var(--cat, var(--accent));opacity:.5;}
+  .result-info{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;}
+
+  /* ---------- MODALS ---------- */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(8,4,16,.72);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    opacity:0;pointer-events:none;transition:opacity .18s ease;z-index:50;
+  }
+  .modal-backdrop.open{opacity:1;pointer-events:auto;}
+  .modal{
+    background:linear-gradient(165deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border-hi);border-radius:var(--radius-lg);
+    width:100%;max-width:540px;max-height:88vh;overflow-y:auto;
+    padding:26px 26px 22px;transform:translateY(14px) scale(.98);transition:transform .18s ease;
+  }
+  .modal-backdrop.open .modal{transform:translateY(0) scale(1);}
+  .modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;gap:12px;}
+  .modal-head h2{margin:0 0 4px;font-size:20px;}
+  .modal-head p{margin:0;font-size:13px;color:var(--text-dim);}
+  .modal-close{background:none;border:none;color:var(--text-faint);cursor:pointer;padding:4px;}
+  .modal-close .icon{width:20px;height:20px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
+  .form-grid .full{grid-column:1/-1;}
+  .field label{display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px;font-weight:600;}
+  .field input,.field select,.field textarea{
+    width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);
+    padding:10px 12px;border-radius:var(--radius-sm);font-size:13.5px;resize:vertical;
+  }
+  .field textarea{min-height:64px;font-family:inherit;}
+  .field small{display:block;color:var(--text-faint);font-size:11px;margin-top:5px;}
+  .file-input{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none;}
+  .upload-box{
+    border:1px dashed var(--border-hi);border-radius:var(--radius-sm);background:rgba(255,255,255,.025);
+    padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .upload-copy{display:flex;align-items:center;gap:10px;color:var(--text-dim);font-size:13px;}
+  .upload-copy .icon{color:var(--accent-2);}
+  .upload-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .upload-preview img{width:64px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--border);}
+  .hidden-links{display:none;}
+  .modal-actions{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:10px;}
+  .btn{
+    border:none;border-radius:999px;padding:11px 20px;font-weight:700;font-size:13.5px;cursor:pointer;
+  }
+  .btn-primary{background:var(--accent);color:var(--accent-ink);}
+  .btn-ghost{background:var(--bg-2);color:var(--text-dim);border:1px solid var(--border);}
+  .btn-danger{background:transparent;color:var(--danger);border:1px solid color-mix(in srgb, var(--danger) 45%, transparent);}
+  .btn-danger:hover{background:color-mix(in srgb, var(--danger) 12%, transparent);}
+
+  /* ---------- LIGHTBOX ---------- */
+  .lightbox{
+    position:fixed;inset:0;background:rgba(5,2,10,.9);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .18s ease;z-index:60;
+  }
+  .lightbox.open{opacity:1;pointer-events:auto;}
+  .lightbox img{max-width:min(86vw,780px);max-height:78vh;border-radius:var(--radius-md);box-shadow:0 30px 70px -20px rgba(0,0,0,.7);}
+  .lightbox-close{position:absolute;top:22px;right:26px;background:rgba(255,255,255,.08);border:none;color:#fff;width:38px;height:38px;border-radius:999px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .lightbox-nav{background:rgba(255,255,255,.1);border:none;color:#fff;width:46px;height:46px;border-radius:999px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 18px;flex-shrink:0;}
+  .lightbox-nav:hover{background:rgba(255,255,255,.2);}
+  .lightbox-counter{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.75);font-size:13px;}
+
+  /* ---------- TOAST ---------- */
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--panel-hi);border:1px solid var(--border-hi);color:var(--text);
+    padding:12px 20px;border-radius:999px;font-size:13.5px;box-shadow:0 20px 40px -18px rgba(0,0,0,.7);
+    opacity:0;transition:opacity .2s ease, transform .2s ease;pointer-events:none;z-index:70;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .view-panel{display:none;}
+  .view-panel.active{display:block;}
+
+  /* ---------- TIERLIST ---------- */
+  .tier-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start;}
+  .tier-board{border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--panel);}
+  .tier-row{display:grid;grid-template-columns:74px 1fr;min-height:86px;border-bottom:1px solid var(--border);}
+  .tier-row:last-child{border-bottom:none;}
+  .tier-label{
+    display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;
+    font-size:24px;font-weight:800;color:#140d22;
+  }
+  .tier-items{display:flex;flex-wrap:wrap;gap:9px;align-content:flex-start;padding:12px;background:rgba(255,255,255,.025);}
+  .tier-chip{
+    background:var(--bg-2);border:1px solid var(--border-hi);border-radius:999px;color:var(--text);
+    padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;
+  }
+  .tier-chip:hover{border-color:var(--accent-2);}
+  .tier-side{
+    background:linear-gradient(165deg, var(--panel), var(--panel-2));border:1px solid var(--border);
+    border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;gap:14px;
+  }
+  .tier-side h2{font-size:16px;margin:0;}
+  .tier-form{display:flex;flex-direction:column;gap:10px;}
+  .tier-form input,.tier-form select{
+    width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);
+    padding:10px 12px;border-radius:var(--radius-sm);font-size:13.5px;
+  }
+  .tier-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .tier-actions .btn{padding:10px 14px;}
+  .tier-pool{display:flex;flex-wrap:wrap;gap:8px;max-height:230px;overflow:auto;padding-right:2px;}
+  .tier-help{font-size:12px;color:var(--text-faint);margin:0;}
+
+  .footer-note{margin-top:34px;font-size:12.5px;color:var(--text-faint);}
+  .footer-note a{color:var(--accent-2);}
+
+  @media (max-width:760px){
+    .app-shell{flex-direction:column;}
+    .sidebar{width:100%;flex-direction:row;padding:14px 16px;gap:14px;border-right:none;border-bottom:1px solid var(--border);}
+    .nav-tabs{flex-direction:row;}
+    .nav-tab{width:auto;flex-direction:row;padding:9px 14px;}
+    .sidebar-foot{display:none;}
+    .main{padding:26px 18px 50px;}
+    .form-grid{grid-template-columns:1fr;}
+    .tier-layout{grid-template-columns:1fr;}
+    .tier-row{grid-template-columns:58px 1fr;}
+    .tier-label{font-size:20px;}
+  }
+</style>
+</head>
+<body>
+
+<svg style="display:none">
+  <symbol id="icon-pin" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21c-4-4.5-7-8.2-7-11a7 7 0 0 1 14 0c0 2.8-3 6.5-7 11z"/></symbol>
+  <symbol id="icon-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="icon-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></symbol>
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+  <symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 3.3l2.7 5.6 6.1.6-4.6 4.2 1.3 6-5.5-3-5.5 3 1.3-6-4.6-4.2 6.1-.6z"/></symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="4 12 9 17 20 6"/></symbol>
+  <symbol id="icon-square" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/></symbol>
+  <symbol id="icon-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></symbol>
+  <symbol id="icon-monitor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></symbol>
+  <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5-9 9"/></symbol>
+  <symbol id="icon-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="icon-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="icon-chevron-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+  <symbol id="icon-chevron-right" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+  <symbol id="icon-external" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+  <symbol id="icon-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="icon-trophy" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 3"/><path d="M17 6h3a3 3 0 0 1-3 3"/></symbol>
+  <symbol id="icon-gamepad" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="16" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="18" cy="13" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/></symbol>
+  <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.5 8.5 0 0 1-3.3-.7L3 21l1.8-5.4A8.4 8.4 0 1 1 21 11.5z"/></symbol>
+</svg>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><svg class="icon"><use href="#icon-pin"/></svg></div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-view="board">
+        <svg class="icon"><use href="#icon-grid"/></svg>
+        <span>Доска</span>
+      </button>
+      <button class="nav-tab" data-view="roulette">
+        <svg class="icon"><use href="#icon-dice"/></svg>
+        <span>Рулетка</span>
+      </button>
+      <button class="nav-tab" data-view="tierlist">
+        <svg class="icon"><use href="#icon-trophy"/></svg>
+        <span>Тирлист</span>
+      </button>
+    </nav>
+    <div class="sidebar-foot">Идеи для стрима</div>
+  </aside>
+
+  <main class="main">
+    <div class="wrap">
+
+      <!-- ===== BOARD VIEW ===== -->
+      <section class="view-panel active" id="view-board">
+        <div class="page-head">
+          <div>
+            <h1>Доска идей</h1>
+            <p>Форматы, игры и штуки для стрима — фильтруй, ищи и добавляй свои.</p>
+          </div>
+          <button class="add-btn" id="addBtn"><svg class="icon"><use href="#icon-plus"/></svg>Добавить идею</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-row">
+            <div class="search-field">
+              <svg class="icon"><use href="#icon-search"/></svg>
+              <input type="text" id="search" placeholder="Искать идею, тег…">
+            </div>
+            <div class="select-field">
+              <select id="sortSelect">
+                <option value="default">По порядку</option>
+                <option value="alpha">По алфавиту</option>
+                <option value="newest">Сначала новые</option>
+              </select>
+            </div>
+            <div class="seg">
+              <button id="gridBtn" class="active" title="Сеткой"><svg class="icon"><use href="#icon-grid"/></svg></button>
+              <button id="listBtn" title="Списком"><svg class="icon"><use href="#icon-list"/></svg></button>
+            </div>
+            <button class="icon-toggle" id="favToggle" title="Только избранное"><svg class="icon"><use href="#icon-star"/></svg></button>
+            <button class="icon-toggle" id="hidePlayedToggle" title="Скрыть уже сыгранные"><svg class="icon"><use href="#icon-check"/></svg></button>
+          </div>
+          <div class="chips-row" id="chips"></div>
+        </div>
+
+        <p class="count" id="count"></p>
+        <div class="grid" id="grid"></div>
+
+        <p class="footer-note" id="footerNote"></p>
+      </section>
+
+      <!-- ===== ROULETTE VIEW ===== -->
+      <section class="view-panel" id="view-roulette">
+        <div class="page-head">
+          <div>
+            <h1>Рулетка идей</h1>
+            <p>Не можешь выбрать — пусть выберет рулетка. Учитывает текущие фильтры доски.</p>
+          </div>
+        </div>
+        <div class="roulette-panel">
+          <div class="reel-window">
+            <div class="reel-center"></div>
+            <div class="reel-track" id="reelTrack"></div>
+          </div>
+          <button class="roll-btn" id="rollBtn"><svg class="icon"><use href="#icon-dice"/></svg>Крутить рулетку</button>
+          <div class="result-card" id="resultCard">
+            <div class="result-media" id="resultMedia"></div>
+            <div class="result-info" id="resultInfo"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== TIERLIST VIEW ===== -->
+      <section class="view-panel" id="view-tierlist">
+        <div class="page-head">
+          <div>
+            <h1>Тирлист игр</h1>
+            <p>После стрима закидывай сыгранную игру в тир. Всё сохраняется в этом браузере и останется после перезахода.</p>
+          </div>
+        </div>
+        <div class="tier-layout">
+          <div class="tier-board" id="tierBoard"></div>
+          <aside class="tier-side">
+            <h2>Добавить сыгранную игру</h2>
+            <form class="tier-form" id="tierForm">
+              <input type="text" id="tierGameName" placeholder="Название игры" required>
+              <select id="tierRank">
+                <option value="S">S — легенда стрима</option>
+                <option value="A">A — очень зашло</option>
+                <option value="B">B — норм, можно повторить</option>
+                <option value="C">C — на один раз</option>
+                <option value="D">D — лучше забыть</option>
+              </select>
+              <button class="btn btn-primary" type="submit">Сохранить</button>
+            </form>
+            <p class="tier-help">Можно нажать на игру в списке ниже, выбрать тир и сохранить. Клик по игре в самом тирлисте удаляет её.</p>
+            <div class="tier-actions">
+              <button class="btn btn-ghost" id="seedPlayedBtn" type="button">Добавить отмеченные</button>
+              <button class="btn btn-danger" id="clearTierBtn" type="button">Очистить</button>
+            </div>
+            <div class="tier-pool" id="tierPool"></div>
+          </aside>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Add / edit idea modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2 id="modalTitle">Новая идея</h2>
+        <p id="modalSub"></p>
+      </div>
+      <button class="modal-close" id="closeModalBtn"><svg class="icon"><use href="#icon-x"/></svg></button>
+    </div>
+    <form id="ideaForm">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Название</label>
+          <input type="text" id="f-title" required>
+        </div>
+        <div class="field">
+          <label>Категория</label>
+          <select id="f-cat">
+            <option value="coop">Кооп с друзьями</option>
+            <option value="sites">Сайты и браузерки</option>
+            <option value="chat">Форматы для чата</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Иконка (эмодзи, необязательно)</label>
+          <input type="text" id="f-emoji" placeholder="🎮" maxlength="4">
+        </div>
+        <div class="field full">
+          <label>Описание</label>
+          <textarea id="f-desc" required></textarea>
+        </div>
+        <div class="field">
+          <label>Игроков</label>
+          <input type="text" id="f-players" placeholder="2–4 человека">
+        </div>
+        <div class="field">
+          <label>Длительность</label>
+          <input type="text" id="f-duration" placeholder="20–40 мин">
+        </div>
+        <div class="field">
+          <label>Платформа</label>
+          <input type="text" id="f-platform" placeholder="Steam / браузер">
+        </div>
+        <div class="field">
+          <label>Ссылка</label>
+          <input type="text" id="f-link" placeholder="https://…">
+        </div>
+        <div class="field full">
+          <label>Теги (через запятую)</label>
+          <input type="text" id="f-tags" placeholder="кооп, голосование">
+        </div>
+        <div class="field full">
+          <label>Картинки</label>
+          <div class="upload-box">
+            <div class="upload-copy">
+              <svg class="icon"><use href="#icon-image"/></svg>
+              <span>Загрузи файлы с компа или вставь ссылки ниже.</span>
+            </div>
+            <label class="btn btn-ghost" for="f-upload">Выбрать файлы</label>
+            <input class="file-input" type="file" id="f-upload" accept="image/*" multiple>
+          </div>
+          <div class="upload-preview" id="uploadPreview"></div>
+          <textarea id="f-image-links" placeholder="https://…jpg&#10;https://…png"></textarea>
+          <textarea class="hidden-links" id="f-images"></textarea>
+          <small>Файлы автоматически сжимаются перед сохранением, чтобы сайт не тормозил. Первая картинка станет обложкой.</small>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger" id="deleteBtn" style="display:none;">Удалить идею</button>
+        <div style="display:flex;gap:10px;margin-left:auto;">
+          <button type="button" class="btn btn-ghost" id="cancelBtn">Отмена</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">Добавить</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Image lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><svg class="icon" style="width:18px;height:18px;"><use href="#icon-x"/></svg></button>
+  <button class="lightbox-nav" id="lightboxPrev"><svg class="icon" style="width:20px;height:20px;"><use href="#icon-chevron-left"/></svg></button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav" id="lightboxNext"><svg class="icon" style="width:20px;height:20px;"><use href="#icon-chevron-right"/></svg></button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ОБЩАЯ ДОСКА ЧЕРЕЗ SUPABASE (необязательно)
+   Хочешь, чтобы идеи, добавленные тобой или зрителями, были
+   видны всем — заведи бесплатный проект на supabase.com и
+   выполни в SQL editor:
+
+   create table ideas (
+     id text primary key,
+     cat text not null,
+     emoji text,
+     title text not null,
+     description text not null,
+     tags text[],
+     players text,
+     platform text,
+     duration text,
+     link text,
+     images text[],
+     created_at timestamptz default now()
+   );
+   alter table ideas enable row level security;
+   create policy "public read" on ideas for select using (true);
+   create policy "public insert" on ideas for insert with check (true);
+   create policy "public update" on ideas for update using (true) with check (true);
+   create policy "public delete" on ideas for delete using (true);
+
+   Если таблицу уже создавал раньше без картинок, добавь колонку:
+   alter table ideas add column if not exists images text[];
+
+   Затем впиши сюда URL проекта и его anon key (Project settings → API).
+   Пока URL/ключ не заполнены, сайт работает локально — идеи
+   сохраняются только в браузере того, кто их добавил.
+   ============================================================ */
+const SUPABASE_URL = 'https://hbeoowyuykxueqhkejsd.supabase.co';       // например: 'https://xxxx.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiZW9vd3l1eWt4dWVxaGtlanNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTA2MTksImV4cCI6MjEwNTY2NjYxOX0.AFFHYb7QS3xItNa3GCWvrotu-KXRG7W_MylLVy0j-6I';  // публичный anon key из настроек проекта
+const SHARED_ENABLED = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 10;
+
+const CATS = {
+  coop:  {label:'Кооп с друзьями', color:'var(--cat-coop)', icon:'icon-gamepad'},
+  sites: {label:'Сайты и браузерки', color:'var(--cat-sites)', icon:'icon-globe'},
+  chat:  {label:'Форматы для чата', color:'var(--cat-chat)', icon:'icon-chat'}
+};
+
+const BUILTIN_IDEAS = [
+  {id:'jackbox', cat:'coop', emoji:'🎉', title:'Jackbox Party Pack', desc:'Играет стример с друзьями с телефонов, чат голосует за лучшие шутки и рисунки — заходит с любой частью.', tags:['вечеринка','голосование'], players:'3–8 человек', platform:'Steam + телефоны', duration:'30–60 мин', images:['2x1_NSwitchDS_TheJackboxPartyBundle_image1600w.jpg']},
+  {id:'gartic', cat:'coop', emoji:'✏️', title:'Gartic Phone / Skribbl.io', desc:'Бесплатный «испорченный телефон» с рисунками — голосовой чат друзей во время игры сам себе готовые нарезки.', tags:['рисование','нарезки'], players:'4–12 человек', platform:'браузер', duration:'15–30 мин', images:['gartic-phone-button-1668215807194.webp']},
+  {id:'geoguessr', cat:'coop', emoji:'🌍', title:'GeoGuessr', desc:'Угадываете локацию по Google Street View в коопе или на дуэли — чат обожает подсказывать или специально путать.', tags:['дуэль','чат участвует'], players:'1–4 человека', platform:'браузер', duration:'20–40 мин', images:['images.jpg']},
+  {id:'lethal', cat:'coop', emoji:'👻', title:'Lethal Company / Phasmophobia', desc:'Кооп-хорроры с голосовым чатом — самый быстрый способ получить искренние крики и смешные моменты.', tags:['хоррор','кооп'], players:'2–4 человека', platform:'Steam', duration:'40–90 мин', images:['Phasmophobia_logo.jpg','ss_78075e9a94675823024f12fce9d69b243cca94f8.1920x1080.jpg']},
+  {id:'liarsbar', cat:'coop', emoji:'🎲', title:"Liar's Bar / Buckshot Roulette", desc:'Простые игры на блеф с мультиплеером и стильной визуалкой — быстрые раунды, легко заходить и выходить.', tags:['блеф','короткие раунды'], players:'2–4 человека', platform:'Steam', duration:'15–30 мин', images:['liars_bar-10.jpg','Buckshot_Roulette.jpg']},
+  {id:'keeptalking', cat:'coop', emoji:'💣', title:'Keep Talking and Nobody Explodes', desc:'Один видит бомбу на экране, остальные с инструкцией на слух объясняют, как её разминировать. Хаос гарантирован.', tags:['на слух','тайминг'], players:'2+ человека', platform:'Steam / VR', duration:'20–40 мин'},
+  {id:'makeitmeme', cat:'sites', emoji:'🖼️', title:'MakeItMeme', desc:'Сайт даёт случайные картинки — за ограниченное время придумываете подписи, потом голосуете все вместе.', tags:['мемы','голосование'], players:'2+ человека', platform:'браузер', duration:'10–20 мин'},
+  {id:'tierlist', cat:'sites', emoji:'📊', title:'Tier List (Tiermaker)', desc:'Совместные тир-листы на любую тему: фастфуд, аниме, бесящие типы людей — можно даже локальные мемы чата.', tags:['обсуждение','рейтинг'], players:'1+ человек', platform:'браузер', duration:'10–25 мин'},
+  {id:'higherlower', cat:'sites', emoji:'🔼', title:'Higher Lower Game', desc:'Угадываете, что чаще ищут в Google — простая механика, которая затягивает всю компанию на полчаса.', tags:['простая механика'], players:'1+ человек', platform:'браузер', duration:'10–20 мин'},
+  {id:'wikigame', cat:'sites', emoji:'🌀', title:'The Wiki Game', desc:'Нужно дойти от одной случайной статьи Википедии до другой только по внутренним ссылкам. Например, от «Чипсы» до «Квантовой физики».', tags:['скорость','логика'], players:'1+ человек', platform:'браузер', duration:'10–20 мин'},
+  {id:'akinator', cat:'chat', emoji:'🧞', title:'Акинатор против стримера', desc:'Чат загадывает персонажа (или самого стримера), а стример с друзьями пытаются угадать его по вопросам Акинатора.', tags:['чат загадывает'], players:'1+ человек', platform:'браузер', duration:'10–15 мин'},
+  {id:'setups', cat:'chat', emoji:'🖥️', title:'Смотрим и оцениваем', desc:'Зрители присылают фото сетапов, рабочих столов или котиков через форму или Discord — стрим с друзьями это оценивает в эфире.', tags:['зрители присылают'], players:'1+ человек', platform:'Discord/форма', duration:'15–30 мин'},
+  {id:'truthordare', cat:'chat', emoji:'⚔️', title:'Правда или дезертирство', desc:'Играете в любую обычную игру, но каждая смерть или проигрыш — это ответ на каверзный вопрос из чата.', tags:['штрафы','вопросы из чата'], players:'1+ человек', platform:'любая игра', duration:'весь стрим'},
+  {id:'tests', cat:'chat', emoji:'📝', title:'Дурацкие тесты', desc:'Проходите тесты вроде «какой ты покемон» или «сдашь ли ЕГЭ без подготовки» и спорите над каждым вопросом.', tags:['обсуждение','короткий формат'], players:'1+ человек', platform:'браузер', duration:'10–20 мин'},
+  {id:'content-warning', cat:'coop', emoji:'📹', title:'Content Warning', desc:'Команда снимает страшные моменты ради просмотров внутри игры: можно устроить конкурс, чей выпуск набрал больше хайпа.', tags:['кооп','хоррор','нарезки'], players:'2–4 человека', platform:'Steam', duration:'30–60 мин', images:['header.jpg']},
+  {id:'amongus', cat:'coop', emoji:'🚀', title:'Among Us с наказаниями', desc:'Классика на предательство, но с условиями от чата: говорить только вопросами, защищаться без слова «я», играть роль персонажа.', tags:['мафия','чат придумывает'], players:'5–10 человек', platform:'Steam / mobile', duration:'30–90 мин'},
+  {id:'plateup', cat:'coop', emoji:'🍳', title:'PlateUp! / Overcooked', desc:'Кулинарный хаос для компании: чат выбирает правила ресторана, а команда пытается не развалиться на ровном месте.', tags:['кооп','хаос'], players:'2–4 человека', platform:'Steam', duration:'30–60 мин', images:['41VcjPSfjwL.png']},
+  {id:'guess-song', cat:'chat', emoji:'🎧', title:'Угадай песню / саундтрек', desc:'Модер включает короткие фрагменты, стример и друзья угадывают, а чат ведёт счёт и подкидывает темы для раундов.', tags:['музыка','викторина'], players:'1+ человек', platform:'Discord / браузер', duration:'20–40 мин'},
+  {id:'chat-build', cat:'chat', emoji:'🧱', title:'Чат строит билд', desc:'В любой игре чат голосует за оружие, перки, персонажа или маршрут. Стример обязан прожить с этим выбором хотя бы один раунд.', tags:['голосование','челлендж'], players:'1+ человек', platform:'любая игра', duration:'весь стрим'},
+  {id:'steam-demo-night', cat:'sites', emoji:'🛒', title:'Вечер демоверсий Steam', desc:'Берёте 5–7 коротких демо, после каждой чат ставит оценку, а лучшие попадают в будущий стрим.', tags:['поиск игр','оценки'], players:'1+ человек', platform:'Steam', duration:'60–120 мин'}
+];
+
+const LOCAL_KEY = 'stream-ideas-board:custom';
+const FAV_KEY = 'stream-ideas-board:favs';
+const PLAYED_KEY = 'stream-ideas-board:played';
+const EDIT_KEY = 'stream-ideas-board:edits';
+const DELETED_KEY = 'stream-ideas-board:deleted';
+const RATING_KEY = 'stream-ideas-board:ratings';
+const TIER_KEY = 'stream-ideas-board:tierlist';
+
+function loadJSON(key, fallback){
+  try{ const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; }catch(e){ return fallback; }
+}
+function saveJSON(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+
+let overrides = loadJSON(EDIT_KEY, {});
+let deletedIds = new Set(loadJSON(DELETED_KEY, []));
+
+function buildIdeas(){
+  const custom = loadJSON(LOCAL_KEY, []);
+  return [...BUILTIN_IDEAS, ...custom]
+    .filter(i => !deletedIds.has(i.id))
+    .map(i => overrides[i.id] ? {...i, ...overrides[i.id]} : i);
+}
+
+let ideas = buildIdeas();
+let favs = new Set(loadJSON(FAV_KEY, []));
+let played = new Set(loadJSON(PLAYED_KEY, []));
+let ratings = loadJSON(RATING_KEY, {});
+
+let activeCats = new Set();
+let query = '';
+let view = 'grid';
+let sortMode = 'default';
+let favOnly = false;
+let hidePlayed = false;
+let editingId = null;
+
+const grid = document.getElementById('grid');
+const countEl = document.getElementById('count');
+const chipsEl = document.getElementById('chips');
+
+/* ---------- shared board (optional Supabase) ---------- */
+async function fetchShared(){
+  if(!SHARED_ENABLED) return [];
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/ideas?select=*&order=created_at.desc`, {
+      headers:{ apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    if(!res.ok) return [];
+    const rows = await res.json();
+    return rows.map(r => ({...r, desc:r.description}));
+  }catch(e){ return []; }
+}
+function ideaToRow(idea){
+  return { id:idea.id, cat:idea.cat, emoji:idea.emoji, title:idea.title, description:idea.desc, tags:idea.tags, players:idea.players, platform:idea.platform, duration:idea.duration, link:idea.link, images:idea.images||[] };
+}
+async function insertShared(idea){
+  if(!SHARED_ENABLED) return false;
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/ideas`, {
+      method:'POST',
+      headers:{ apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type':'application/json', Prefer:'return=minimal' },
+      body: JSON.stringify(ideaToRow(idea))
+    });
+    return res.ok;
+  }catch(e){ return false; }
+}
+async function updateShared(idea){
+  if(!SHARED_ENABLED) return false;
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/ideas?id=eq.${encodeURIComponent(idea.id)}`, {
+      method:'PATCH',
+      headers:{ apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type':'application/json', Prefer:'return=minimal' },
+      body: JSON.stringify(ideaToRow(idea))
+    });
+    return res.ok;
+  }catch(e){ return false; }
+}
+async function deleteShared(id){
+  if(!SHARED_ENABLED) return false;
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/ideas?id=eq.${encodeURIComponent(id)}`, {
+      method:'DELETE',
+      headers:{ apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    return res.ok;
+  }catch(e){ return false; }
+}
+
+/* ---------- persistence helpers ---------- */
+function persistLocalEdit(idea){
+  if(String(idea.id).startsWith('custom-')){
+    const local = loadJSON(LOCAL_KEY, []);
+    const li = local.findIndex(i=>i.id===idea.id);
+    if(li>-1){ local[li]=idea; saveJSON(LOCAL_KEY, local); }
+  }else{
+    overrides[idea.id] = idea;
+    saveJSON(EDIT_KEY, overrides);
+  }
+}
+function hideLocally(id){
+  if(String(id).startsWith('custom-')){
+    let local = loadJSON(LOCAL_KEY, []);
+    local = local.filter(i=>i.id!==id);
+    saveJSON(LOCAL_KEY, local);
+    if(overrides[id]){ delete overrides[id]; saveJSON(EDIT_KEY, overrides); }
+  }else{
+    deletedIds.add(id);
+    saveJSON(DELETED_KEY, [...deletedIds]);
+  }
+}
+
+/* ---------- nav tabs ---------- */
+document.querySelectorAll('.nav-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const v = btn.dataset.view;
+    document.querySelectorAll('.view-panel').forEach(panel=>panel.classList.remove('active'));
+    document.getElementById(`view-${v}`)?.classList.add('active');
+    if(v==='tierlist') renderTierlist();
+  });
+});
+
+/* ---------- chips ---------- */
+function buildChips(){
+  const cats = [{key:'all', label:'Все', icon:null, color:null}, ...Object.entries(CATS).map(([key,v])=>({key,label:v.label,icon:v.icon,color:v.color}))];
+  chipsEl.innerHTML = cats.map(c => {
+    const active = c.key==='all' ? activeCats.size===0 : activeCats.has(c.key);
+    const style = c.color ? `style="--chip-color:${c.color}"` : '';
+    const icon = c.icon ? `<svg class="icon"><use href="#${c.icon}"/></svg>` : '';
+    return `<button class="chip ${active?'active':''}" data-cat="${c.key}" ${style}>${icon}${c.label}</button>`;
+  }).join('');
+  chipsEl.querySelectorAll('.chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const key = btn.dataset.cat;
+      if(key==='all'){ activeCats.clear(); }
+      else{ activeCats.has(key) ? activeCats.delete(key) : activeCats.add(key); }
+      buildChips();
+      render();
+    });
+  });
+}
+
+function filtered(){
+  let list = ideas.filter(i=>{
+    const matchesCat = activeCats.size===0 || activeCats.has(i.cat);
+    const q = query.trim().toLowerCase();
+    const matchesQuery = !q || i.title.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q) || (i.tags||[]).some(t=>t.toLowerCase().includes(q));
+    const matchesFav = !favOnly || favs.has(i.id);
+    const matchesPlayed = !hidePlayed || !played.has(i.id);
+    return matchesCat && matchesQuery && matchesFav && matchesPlayed;
+  });
+  if(sortMode==='alpha') list = [...list].sort((a,b)=>a.title.localeCompare(b.title,'ru'));
+  if(sortMode==='newest') list = [...list].reverse();
+  return list;
+}
+
+function mediaHtml(idea){
+  const imgs = idea.images && idea.images.length ? idea.images : [];
+  if(imgs.length){
+    const count = imgs.length>1 ? `<span class="media-count">+${imgs.length-1}</span>` : '';
+    return `<div class="card-media" style="background-image:url('${escapeAttr(imgs[0])}')">
+      ${count}
+      <button class="gallery-btn" data-id="${idea.id}"><svg class="icon"><use href="#icon-image"/></svg>Посмотреть</button>
+    </div>`;
+  }
+  const icon = CATS[idea.cat] ? CATS[idea.cat].icon : 'icon-image';
+  return `<div class="card-media"><svg class="icon media-icon"><use href="#${icon}"/></svg></div>`;
+}
+
+function ratingHtml(idea, isPlayed){
+  if(!isPlayed) return '';
+  const value = Number(ratings[idea.id] || 0);
+  const stars = [1,2,3,4,5].map(n=>{
+    const fill = Math.max(0, Math.min(1, value - (n - 1))) * 100;
+    return `<button class="rating-star" data-id="${idea.id}" data-star="${n}" style="--fill:${fill}%" title="Оценить до ${n}"></button>`;
+  }).join('');
+  return `<div class="rating-row">
+    <span class="rating-label">Оценка после игры</span>
+    <div class="rating-control" data-id="${idea.id}">${stars}<span class="rating-value">${value ? value.toFixed(1).replace('.0','') : '—'}</span></div>
+  </div>`;
+}
+
+function render(){
+  const list = filtered();
+  countEl.textContent = list.length ? `${list.length} ${pluralize(list.length)} на доске` : '';
+  grid.className = 'grid' + (view==='list' ? ' list-view' : '');
+  if(!list.length){
+    grid.innerHTML = `<div class="empty"><svg class="icon"><use href="#icon-search"/></svg><span>Ничего не нашлось. Попробуй другой фильтр или добавь свою идею.</span></div>`;
+    return;
+  }
+  grid.innerHTML = list.map((idea)=>{
+    const isFav = favs.has(idea.id);
+    const isPlayed = played.has(idea.id);
+    const cat = CATS[idea.cat] || {label:idea.cat, color:'var(--accent)', icon:'icon-image'};
+    const meta = [];
+    if(idea.players) meta.push(`<span><svg class="icon"><use href="#icon-users"/></svg>${escapeHtml(idea.players)}</span>`);
+    if(idea.duration) meta.push(`<span><svg class="icon"><use href="#icon-clock"/></svg>${escapeHtml(idea.duration)}</span>`);
+    if(idea.platform) meta.push(`<span><svg class="icon"><use href="#icon-monitor"/></svg>${escapeHtml(idea.platform)}</span>`);
+    return `
+      <article class="card ${isPlayed?'is-played':''}" style="--cat:${cat.color}">
+        ${mediaHtml(idea)}
+        <div class="card-actions">
+          <button class="fav-btn ${isFav?'active':''}" data-id="${idea.id}" title="В избранное"><svg class="icon ${isFav?'filled':''}"><use href="#icon-star"/></svg></button>
+          <button class="played-btn ${isPlayed?'active':''}" data-id="${idea.id}" title="Уже играли"><svg class="icon"><use href="#${isPlayed?'icon-check':'icon-square'}"/></svg></button>
+        </div>
+        <div class="card-body">
+          <span class="cat-badge"><svg class="icon"><use href="#${cat.icon}"/></svg>${cat.label}</span>
+          <h3 class="card-title">${escapeHtml(idea.title)}</h3>
+          <p class="card-desc">${escapeHtml(idea.desc)}</p>
+          ${meta.length ? `<div class="meta-row">${meta.join('')}</div>` : ''}
+          ${idea.tags && idea.tags.length ? `<div class="tags">${idea.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+          ${ratingHtml(idea, isPlayed)}
+          <div class="card-foot">
+            ${idea.link ? `<a class="card-link" href="${escapeAttr(idea.link)}" target="_blank" rel="noopener">Открыть<svg class="icon"><use href="#icon-external"/></svg></a>` : '<span></span>'}
+            <button class="edit-link" data-id="${idea.id}"><svg class="icon"><use href="#icon-pencil"/></svg>Изменить</button>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+
+  grid.querySelectorAll('.fav-btn').forEach(b=>b.addEventListener('click', ()=>{
+    const id=b.dataset.id;
+    favs.has(id)?favs.delete(id):favs.add(id);
+    saveJSON(FAV_KEY,[...favs]);
+    render();
+  }));
+  grid.querySelectorAll('.played-btn').forEach(b=>b.addEventListener('click', ()=>{
+    const id=b.dataset.id;
+    played.has(id)?played.delete(id):played.add(id);
+    saveJSON(PLAYED_KEY,[...played]);
+    render();
+    renderTierlist();
+  }));
+  grid.querySelectorAll('.rating-star').forEach(b=>b.addEventListener('click', e=>{
+    const id = b.dataset.id;
+    const rect = b.getBoundingClientRect();
+    const half = (e.clientX - rect.left) <= rect.width / 2 ? 0.5 : 1;
+    ratings[id] = Number(b.dataset.star) - 1 + half;
+    saveJSON(RATING_KEY, ratings);
+    render();
+  }));
+  grid.querySelectorAll('.edit-link').forEach(b=>b.addEventListener('click', ()=>{
+    openEdit(b.dataset.id);
+  }));
+  grid.querySelectorAll('.gallery-btn').forEach(b=>b.addEventListener('click', ()=>{
+    const idea = ideas.find(i=>i.id===b.dataset.id);
+    if(idea) openLightbox(idea.images, 0);
+  }));
+}
+
+function pluralize(n){
+  const mod10 = n % 10, mod100 = n % 100;
+  if(mod10===1 && mod100!==11) return 'идея';
+  if([2,3,4].includes(mod10) && ![12,13,14].includes(mod100)) return 'идеи';
+  return 'идей';
+}
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s ?? '';
+  return d.innerHTML;
+}
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+/* ---- filters / sort / view ---- */
+document.getElementById('search').addEventListener('input', e=>{ query = e.target.value; render(); });
+document.getElementById('sortSelect').addEventListener('change', e=>{ sortMode = e.target.value; render(); });
+document.getElementById('favToggle').addEventListener('click', function(){
+  favOnly = !favOnly; this.classList.toggle('active', favOnly); render();
+});
+document.getElementById('hidePlayedToggle').addEventListener('click', function(){
+  hidePlayed = !hidePlayed; this.classList.toggle('active', hidePlayed); render();
+});
+document.getElementById('gridBtn').addEventListener('click', ()=>{ setView('grid'); });
+document.getElementById('listBtn').addEventListener('click', ()=>{ setView('list'); });
+function setView(v){
+  view = v;
+  document.getElementById('gridBtn').classList.toggle('active', v==='grid');
+  document.getElementById('listBtn').classList.toggle('active', v==='list');
+  render();
+}
+
+/* ---- lightbox ---- */
+let lightboxImages = [];
+let lightboxIndex = 0;
+const lightboxEl = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCounter = document.getElementById('lightboxCounter');
+function openLightbox(images, index){
+  if(!images || !images.length) return;
+  lightboxImages = images;
+  lightboxIndex = index || 0;
+  updateLightbox();
+  lightboxEl.classList.add('open');
+}
+function updateLightbox(){
+  lightboxImg.src = lightboxImages[lightboxIndex];
+  lightboxCounter.textContent = lightboxImages.length>1 ? `${lightboxIndex+1} / ${lightboxImages.length}` : '';
+  document.getElementById('lightboxPrev').style.display = lightboxImages.length>1 ? 'flex' : 'none';
+  document.getElementById('lightboxNext').style.display = lightboxImages.length>1 ? 'flex' : 'none';
+}
+document.getElementById('lightboxClose').addEventListener('click', ()=>lightboxEl.classList.remove('open'));
+document.getElementById('lightboxPrev').addEventListener('click', ()=>{
+  lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+  updateLightbox();
+});
+document.getElementById('lightboxNext').addEventListener('click', ()=>{
+  lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+  updateLightbox();
+});
+lightboxEl.addEventListener('click', e=>{ if(e.target===lightboxEl) lightboxEl.classList.remove('open'); });
+document.addEventListener('keydown', e=>{
+  if(lightboxEl.classList.contains('open')){
+    if(e.key==='Escape') lightboxEl.classList.remove('open');
+    if(e.key==='ArrowLeft') document.getElementById('lightboxPrev').click();
+    if(e.key==='ArrowRight') document.getElementById('lightboxNext').click();
+  }else if(backdrop.classList.contains('open') && e.key==='Escape'){
+    closeModal();
+  }
+});
+
+/* ---- add / edit idea modal ---- */
+const backdrop = document.getElementById('modalBackdrop');
+const modalTitle = document.getElementById('modalTitle');
+const modalSub = document.getElementById('modalSub');
+const submitBtn = document.getElementById('submitBtn');
+const deleteBtn = document.getElementById('deleteBtn');
+const uploadInput = document.getElementById('f-upload');
+const uploadPreview = document.getElementById('uploadPreview');
+const hiddenImagesField = document.getElementById('f-images');
+const imageLinksField = document.getElementById('f-image-links');
+
+function getImageList(){
+  const stored = hiddenImagesField.value.split('\n').map(t=>t.trim()).filter(Boolean);
+  const links = imageLinksField.value.split('\n').map(t=>t.trim()).filter(Boolean);
+  return [...stored, ...links];
+}
+
+function setImageList(images){
+  const stored = (images || []).filter(src=>src.startsWith('data:image/'));
+  const links = (images || []).filter(src=>!src.startsWith('data:image/'));
+  hiddenImagesField.value = stored.join('\n');
+  imageLinksField.value = links.join('\n');
+  renderUploadPreview(images || []);
+}
+
+function renderUploadPreview(images){
+  uploadPreview.innerHTML = images.slice(0, 10).map(src=>`<img src="${escapeAttr(src)}" alt="">`).join('');
+}
+
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = ()=>{
+        const maxSide = 960;
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        const ctx = canvas.getContext('2d', {alpha:false});
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.76));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+uploadInput.addEventListener('change', async ()=>{
+  const files = [...uploadInput.files].filter(file=>file.type.startsWith('image/')).slice(0, 8);
+  if(!files.length) return;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Сжимаю...';
+  try{
+    const compressed = await Promise.all(files.map(compressImage));
+    hiddenImagesField.value = [...hiddenImagesField.value.split('\n').filter(Boolean), ...compressed].join('\n');
+    renderUploadPreview(getImageList());
+    showToast(`Загружено ${files.length} ${files.length===1 ? 'картинка' : 'картинки'}`);
+  }catch(e){
+    showToast('Не получилось загрузить картинку');
+  }finally{
+    submitBtn.disabled = false;
+    submitBtn.textContent = editingId ? 'Сохранить' : 'Добавить';
+    uploadInput.value = '';
+  }
+});
+imageLinksField.addEventListener('input', ()=>renderUploadPreview(getImageList()));
+
+function openAdd(){
+  editingId = null;
+  document.getElementById('ideaForm').reset();
+  setImageList([]);
+  document.getElementById('f-cat').value = 'coop';
+  modalTitle.textContent = 'Новая идея';
+  modalSub.textContent = SHARED_ENABLED ? 'Она появится на доске у всех, кто открывает сайт.' : 'Она сохранится в этом браузере (общая доска не настроена).';
+  submitBtn.textContent = 'Добавить';
+  deleteBtn.style.display = 'none';
+  backdrop.classList.add('open');
+  document.getElementById('f-title').focus();
+}
+function openEdit(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  editingId = id;
+  document.getElementById('f-title').value = idea.title || '';
+  document.getElementById('f-cat').value = idea.cat || 'coop';
+  document.getElementById('f-emoji').value = idea.emoji || '';
+  document.getElementById('f-desc').value = idea.desc || '';
+  document.getElementById('f-players').value = idea.players || '';
+  document.getElementById('f-duration').value = idea.duration || '';
+  document.getElementById('f-platform').value = idea.platform || '';
+  document.getElementById('f-link').value = idea.link || '';
+  document.getElementById('f-tags').value = (idea.tags||[]).join(', ');
+  setImageList(idea.images || []);
+  modalTitle.textContent = 'Редактировать идею';
+  modalSub.textContent = SHARED_ENABLED ? 'Изменения применятся на общей доске.' : 'Изменения сохранятся в этом браузере.';
+  submitBtn.textContent = 'Сохранить';
+  deleteBtn.style.display = 'inline-block';
+  backdrop.classList.add('open');
+  document.getElementById('f-title').focus();
+}
+document.getElementById('addBtn').addEventListener('click', openAdd);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+backdrop.addEventListener('click', e=>{ if(e.target===backdrop) closeModal(); });
+function closeModal(){ backdrop.classList.remove('open'); document.getElementById('ideaForm').reset(); setImageList([]); editingId=null; }
+
+document.getElementById('ideaForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const title = document.getElementById('f-title').value.trim();
+  const cat = document.getElementById('f-cat').value;
+  const desc = document.getElementById('f-desc').value.trim();
+  const tags = document.getElementById('f-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const emoji = document.getElementById('f-emoji').value.trim() || '🎮';
+  const players = document.getElementById('f-players').value.trim();
+  const duration = document.getElementById('f-duration').value.trim();
+  const platform = document.getElementById('f-platform').value.trim();
+  const link = document.getElementById('f-link').value.trim();
+  const images = getImageList();
+  if(!title || !desc) return;
+
+  if(editingId){
+    const idx = ideas.findIndex(i=>i.id===editingId);
+    if(idx>-1){
+      const updated = {...ideas[idx], cat, emoji, title, desc, tags, players, duration, platform, link, images};
+      ideas[idx] = updated;
+      closeModal();
+      render();
+      if(SHARED_ENABLED && !String(editingId).startsWith('custom-')===false){ /* no-op guard */ }
+      if(SHARED_ENABLED){
+        const ok = await updateShared(updated);
+        showToast(ok ? 'Идея обновлена на общей доске' : 'Не удалось обновить на сервере — изменения видны только у тебя');
+        if(!ok) persistLocalEdit(updated);
+      }else{
+        persistLocalEdit(updated);
+        showToast('Идея обновлена (сохранено в этом браузере)');
+      }
+    }
+  }else{
+    const newIdea = { id: 'custom-'+Date.now(), cat, emoji, title, desc, tags, players, duration, platform, link, images };
+    ideas.push(newIdea);
+    closeModal();
+    activeCats.clear();
+    buildChips();
+    render();
+    if(SHARED_ENABLED){
+      const ok = await insertShared(newIdea);
+      showToast(ok ? 'Идея добавлена на общую доску' : 'Не удалось сохранить на сервер — идея видна только у тебя');
+      if(!ok){ const local = loadJSON(LOCAL_KEY, []); local.push(newIdea); saveJSON(LOCAL_KEY, local); }
+    }else{
+      const local = loadJSON(LOCAL_KEY, []);
+      local.push(newIdea);
+      saveJSON(LOCAL_KEY, local);
+      showToast('Идея добавлена (сохранена в этом браузере)');
+    }
+  }
+});
+
+deleteBtn.addEventListener('click', async ()=>{
+  if(!editingId) return;
+  if(!confirm('Удалить эту идею?')) return;
+  const id = editingId;
+  ideas = ideas.filter(i=>i.id!==id);
+  closeModal();
+  render();
+  if(SHARED_ENABLED){
+    const ok = await deleteShared(id);
+    showToast(ok ? 'Идея удалена с общей доски' : 'Не удалось удалить на сервере — идея скрыта только у тебя');
+    if(!ok) hideLocally(id);
+  }else{
+    hideLocally(id);
+    showToast('Идея удалена');
+  }
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ---- roulette ---- */
+const reelTrack = document.getElementById('reelTrack');
+const rollBtn = document.getElementById('rollBtn');
+const resultCard = document.getElementById('resultCard');
+const resultMedia = document.getElementById('resultMedia');
+const resultInfo = document.getElementById('resultInfo');
+const ITEM_H = 96;
+const WINDOW_H = 288;
+let spinning = false;
+
+function reelItemHtml(idea){
+  const cat = CATS[idea.cat] || {label:idea.cat, color:'var(--accent)', icon:'icon-image'};
+  return `<div class="reel-item" style="--cat:${cat.color}">
+    <svg class="icon ri-icon"><use href="#${cat.icon}"/></svg>
+    <div>
+      <div class="ri-title">${escapeHtml(idea.title)}</div>
+      <div class="ri-cat">${cat.label}</div>
+    </div>
+  </div>`;
+}
+
+rollBtn.addEventListener('click', ()=>{
+  if(spinning) return;
+  const pool = filtered().length ? filtered() : ideas;
+  if(!pool.length) return;
+  spinning = true;
+  rollBtn.disabled = true;
+  resultCard.classList.remove('show');
+
+  const target = pool[Math.floor(Math.random()*pool.length)];
+  const REEL_LEN = 26;
+  const sequence = [];
+  for(let i=0;i<REEL_LEN-1;i++){ sequence.push(pool[Math.floor(Math.random()*pool.length)]); }
+  sequence.push(target);
+
+  reelTrack.style.transition = 'none';
+  reelTrack.style.transform = 'translateY(0px)';
+  reelTrack.innerHTML = sequence.map(reelItemHtml).join('');
+  void reelTrack.offsetHeight;
+
+  const targetIndex = sequence.length - 1;
+  const finalY = -(targetIndex * ITEM_H - (WINDOW_H/2 - ITEM_H/2));
+
+  requestAnimationFrame(()=>{
+    reelTrack.style.transition = 'transform 3.4s cubic-bezier(0.11,0.72,0.14,1)';
+    reelTrack.style.transform = `translateY(${finalY}px)`;
+  });
+
+  reelTrack.addEventListener('transitionend', function onEnd(){
+    reelTrack.removeEventListener('transitionend', onEnd);
+    const items = reelTrack.querySelectorAll('.reel-item');
+    items[targetIndex] && items[targetIndex].classList.add('landed');
+    showResult(target);
+    spinning = false;
+    rollBtn.disabled = false;
+  }, {once:true});
+});
+
+function showResult(idea){
+  const cat = CATS[idea.cat] || {label:idea.cat, color:'var(--accent)', icon:'icon-image'};
+  const hasImg = idea.images && idea.images.length;
+  resultMedia.style.setProperty('--cat', cat.color);
+  resultMedia.style.backgroundImage = hasImg ? `url('${idea.images[0]}')` : '';
+  resultMedia.innerHTML = hasImg ? '' : `<svg class="icon"><use href="#${cat.icon}"/></svg>`;
+  const meta = [];
+  if(idea.players) meta.push(`<span><svg class="icon"><use href="#icon-users"/></svg>${escapeHtml(idea.players)}</span>`);
+  if(idea.duration) meta.push(`<span><svg class="icon"><use href="#icon-clock"/></svg>${escapeHtml(idea.duration)}</span>`);
+  resultInfo.innerHTML = `
+    <span class="cat-badge"><svg class="icon"><use href="#${cat.icon}"/></svg>${cat.label}</span>
+    <h3 class="card-title" style="margin-top:4px;">${escapeHtml(idea.title)}</h3>
+    <p class="card-desc">${escapeHtml(idea.desc)}</p>
+    ${meta.length ? `<div class="meta-row">${meta.join('')}</div>` : ''}
+    ${idea.link ? `<a class="card-link" href="${escapeAttr(idea.link)}" target="_blank" rel="noopener">Открыть<svg class="icon"><use href="#icon-external"/></svg></a>` : ''}
+  `;
+  resultCard.classList.add('show');
+}
+
+/* ---- tierlist ---- */
+const TIER_ROWS = [
+  {rank:'S', color:'#ff6f91'},
+  {rank:'A', color:'#ffcf5c'},
+  {rank:'B', color:'#5ee6c0'},
+  {rank:'C', color:'#8fb7ff'},
+  {rank:'D', color:'#ada0cf'}
+];
+const tierBoard = document.getElementById('tierBoard');
+const tierPool = document.getElementById('tierPool');
+let tierItems = loadJSON(TIER_KEY, []);
+
+function saveTier(){
+  saveJSON(TIER_KEY, tierItems);
+}
+
+function renderTierlist(){
+  if(!tierBoard || !tierPool) return;
+  tierBoard.innerHTML = TIER_ROWS.map(row=>{
+    const items = tierItems.filter(item=>item.rank===row.rank);
+    return `<div class="tier-row">
+      <div class="tier-label" style="background:${row.color}">${row.rank}</div>
+      <div class="tier-items" data-rank="${row.rank}">
+        ${items.map(item=>`<button class="tier-chip" data-id="${escapeAttr(item.id)}" title="Удалить из тирлиста">${escapeHtml(item.title)}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  tierPool.innerHTML = ideas.map(idea=>{
+    const inTier = tierItems.some(item=>item.id===idea.id);
+    const suffix = played.has(idea.id) ? ' ✓' : '';
+    return `<button class="tier-chip" data-title="${escapeAttr(idea.title)}" ${inTier ? 'style="opacity:.55"' : ''}>${escapeHtml(idea.title + suffix)}</button>`;
+  }).join('');
+
+  tierBoard.querySelectorAll('.tier-chip').forEach(btn=>btn.addEventListener('click', ()=>{
+    tierItems = tierItems.filter(item=>item.id!==btn.dataset.id);
+    saveTier();
+    renderTierlist();
+    showToast('Игра удалена из тирлиста');
+  }));
+  tierPool.querySelectorAll('.tier-chip').forEach(btn=>btn.addEventListener('click', ()=>{
+    document.getElementById('tierGameName').value = btn.dataset.title || btn.textContent.replace(' ✓','');
+    document.getElementById('tierGameName').focus();
+  }));
+}
+
+document.getElementById('tierForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const title = document.getElementById('tierGameName').value.trim();
+  const rank = document.getElementById('tierRank').value;
+  if(!title) return;
+  const matchedIdea = ideas.find(idea=>idea.title.toLowerCase()===title.toLowerCase());
+  const id = matchedIdea ? matchedIdea.id : 'tier-'+title.toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'-').replace(/^-|-$/g,'')+'-'+Date.now();
+  const nextItem = {id, title, rank};
+  const existing = tierItems.findIndex(item=>item.id===id || item.title.toLowerCase()===title.toLowerCase());
+  if(existing > -1) tierItems[existing] = nextItem;
+  else tierItems.push(nextItem);
+  saveTier();
+  e.target.reset();
+  renderTierlist();
+  showToast('Тирлист сохранён');
+});
+
+document.getElementById('seedPlayedBtn').addEventListener('click', ()=>{
+  let added = 0;
+  [...played].forEach(id=>{
+    const idea = ideas.find(i=>i.id===id);
+    if(idea && !tierItems.some(item=>item.id===id)){
+      tierItems.push({id, title:idea.title, rank:'B'});
+      added++;
+    }
+  });
+  saveTier();
+  renderTierlist();
+  showToast(added ? `Добавлено: ${added}` : 'Все отмеченные уже в тирлисте');
+});
+
+document.getElementById('clearTierBtn').addEventListener('click', ()=>{
+  if(!tierItems.length) return;
+  if(!confirm('Очистить весь тирлист?')) return;
+  tierItems = [];
+  saveTier();
+  renderTierlist();
+  showToast('Тирлист очищен');
+});
+
+/* ---- init ---- */
+document.getElementById('footerNote').innerHTML = (SHARED_ENABLED
+  ? 'Доска общая: идеи, которые добавляют зрители или другие модеры, видны всем.'
+  : 'Пока доска локальная: «Добавить идею» сохраняет только в этом браузере.') +
+  ' Хранишь сайт на <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>? Правь список идей прямо в коде.';
+
+buildChips();
+render();
+renderTierlist();
+reelTrack.innerHTML = ideas.slice(0,3).map(reelItemHtml).join('');
+
+(async ()=>{
+  if(!SHARED_ENABLED) return;
+  const shared = await fetchShared();
+  if(!shared.length) return;
+  const known = new Set(ideas.map(i=>i.id));
+  shared.forEach(s=>{ if(!known.has(s.id)) ideas.push(s); });
+  render();
+  renderTierlist();
+})();
+</script>
+</body>
+</html>
