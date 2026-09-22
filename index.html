@@ -236,6 +236,19 @@
   }
   .edit-link:hover{color:var(--text);}
   .edit-link .icon{width:13px;height:13px;}
+  .rating-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px;}
+  .rating-label{font-size:11.5px;color:var(--text-faint);}
+  .rating-control{display:flex;align-items:center;gap:2px;}
+  .rating-star{
+    position:relative;width:20px;height:20px;background:none;border:none;padding:0;cursor:pointer;
+    color:rgba(244,240,255,.22);font-size:20px;line-height:1;
+  }
+  .rating-star::before{content:"★";position:absolute;inset:0;color:rgba(244,240,255,.2);}
+  .rating-star::after{
+    content:"★";position:absolute;inset:0;width:var(--fill,0%);overflow:hidden;color:var(--accent);
+  }
+  .rating-star:hover::after{filter:drop-shadow(0 0 8px rgba(255,157,77,.45));}
+  .rating-value{min-width:26px;text-align:right;font-size:12px;font-weight:700;color:var(--accent);}
 
   .empty{
     grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-faint);
@@ -326,6 +339,16 @@
   }
   .field textarea{min-height:64px;font-family:inherit;}
   .field small{display:block;color:var(--text-faint);font-size:11px;margin-top:5px;}
+  .file-input{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none;}
+  .upload-box{
+    border:1px dashed var(--border-hi);border-radius:var(--radius-sm);background:rgba(255,255,255,.025);
+    padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .upload-copy{display:flex;align-items:center;gap:10px;color:var(--text-dim);font-size:13px;}
+  .upload-copy .icon{color:var(--accent-2);}
+  .upload-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .upload-preview img{width:64px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--border);}
+  .hidden-links{display:none;}
   .modal-actions{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:10px;}
   .btn{
     border:none;border-radius:999px;padding:11px 20px;font-weight:700;font-size:13.5px;cursor:pointer;
@@ -360,6 +383,36 @@
   .view-panel{display:none;}
   .view-panel.active{display:block;}
 
+  /* ---------- TIERLIST ---------- */
+  .tier-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start;}
+  .tier-board{border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--panel);}
+  .tier-row{display:grid;grid-template-columns:74px 1fr;min-height:86px;border-bottom:1px solid var(--border);}
+  .tier-row:last-child{border-bottom:none;}
+  .tier-label{
+    display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;
+    font-size:24px;font-weight:800;color:#140d22;
+  }
+  .tier-items{display:flex;flex-wrap:wrap;gap:9px;align-content:flex-start;padding:12px;background:rgba(255,255,255,.025);}
+  .tier-chip{
+    background:var(--bg-2);border:1px solid var(--border-hi);border-radius:999px;color:var(--text);
+    padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;
+  }
+  .tier-chip:hover{border-color:var(--accent-2);}
+  .tier-side{
+    background:linear-gradient(165deg, var(--panel), var(--panel-2));border:1px solid var(--border);
+    border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;gap:14px;
+  }
+  .tier-side h2{font-size:16px;margin:0;}
+  .tier-form{display:flex;flex-direction:column;gap:10px;}
+  .tier-form input,.tier-form select{
+    width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);
+    padding:10px 12px;border-radius:var(--radius-sm);font-size:13.5px;
+  }
+  .tier-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .tier-actions .btn{padding:10px 14px;}
+  .tier-pool{display:flex;flex-wrap:wrap;gap:8px;max-height:230px;overflow:auto;padding-right:2px;}
+  .tier-help{font-size:12px;color:var(--text-faint);margin:0;}
+
   .footer-note{margin-top:34px;font-size:12.5px;color:var(--text-faint);}
   .footer-note a{color:var(--accent-2);}
 
@@ -371,6 +424,9 @@
     .sidebar-foot{display:none;}
     .main{padding:26px 18px 50px;}
     .form-grid{grid-template-columns:1fr;}
+    .tier-layout{grid-template-columns:1fr;}
+    .tier-row{grid-template-columns:58px 1fr;}
+    .tier-label{font-size:20px;}
   }
 </style>
 </head>
@@ -396,6 +452,7 @@
   <symbol id="icon-external" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
   <symbol id="icon-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></symbol>
   <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="icon-trophy" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 3"/><path d="M17 6h3a3 3 0 0 1-3 3"/></symbol>
   <symbol id="icon-gamepad" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="16" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="18" cy="13" r="1" fill="currentColor" stroke="none"/></symbol>
   <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/></symbol>
   <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.5 8.5 0 0 1-3.3-.7L3 21l1.8-5.4A8.4 8.4 0 1 1 21 11.5z"/></symbol>
@@ -412,6 +469,10 @@
       <button class="nav-tab" data-view="roulette">
         <svg class="icon"><use href="#icon-dice"/></svg>
         <span>Рулетка</span>
+      </button>
+      <button class="nav-tab" data-view="tierlist">
+        <svg class="icon"><use href="#icon-trophy"/></svg>
+        <span>Тирлист</span>
       </button>
     </nav>
     <div class="sidebar-foot">Идеи для стрима</div>
@@ -480,6 +541,39 @@
         </div>
       </section>
 
+      <!-- ===== TIERLIST VIEW ===== -->
+      <section class="view-panel" id="view-tierlist">
+        <div class="page-head">
+          <div>
+            <h1>Тирлист игр</h1>
+            <p>После стрима закидывай сыгранную игру в тир. Всё сохраняется в этом браузере и останется после перезахода.</p>
+          </div>
+        </div>
+        <div class="tier-layout">
+          <div class="tier-board" id="tierBoard"></div>
+          <aside class="tier-side">
+            <h2>Добавить сыгранную игру</h2>
+            <form class="tier-form" id="tierForm">
+              <input type="text" id="tierGameName" placeholder="Название игры" required>
+              <select id="tierRank">
+                <option value="S">S — легенда стрима</option>
+                <option value="A">A — очень зашло</option>
+                <option value="B">B — норм, можно повторить</option>
+                <option value="C">C — на один раз</option>
+                <option value="D">D — лучше забыть</option>
+              </select>
+              <button class="btn btn-primary" type="submit">Сохранить</button>
+            </form>
+            <p class="tier-help">Можно нажать на игру в списке ниже, выбрать тир и сохранить. Клик по игре в самом тирлисте удаляет её.</p>
+            <div class="tier-actions">
+              <button class="btn btn-ghost" id="seedPlayedBtn" type="button">Добавить отмеченные</button>
+              <button class="btn btn-danger" id="clearTierBtn" type="button">Очистить</button>
+            </div>
+            <div class="tier-pool" id="tierPool"></div>
+          </aside>
+        </div>
+      </section>
+
     </div>
   </main>
 </div>
@@ -537,9 +631,19 @@
           <input type="text" id="f-tags" placeholder="кооп, голосование">
         </div>
         <div class="field full">
-          <label>Картинки — по одной ссылке на строку</label>
-          <textarea id="f-images" placeholder="https://…jpg&#10;https://…png"></textarea>
-          <small>Первая картинка станет обложкой карточки, остальные — открываются в галерее.</small>
+          <label>Картинки</label>
+          <div class="upload-box">
+            <div class="upload-copy">
+              <svg class="icon"><use href="#icon-image"/></svg>
+              <span>Загрузи файлы с компа или вставь ссылки ниже.</span>
+            </div>
+            <label class="btn btn-ghost" for="f-upload">Выбрать файлы</label>
+            <input class="file-input" type="file" id="f-upload" accept="image/*" multiple>
+          </div>
+          <div class="upload-preview" id="uploadPreview"></div>
+          <textarea id="f-image-links" placeholder="https://…jpg&#10;https://…png"></textarea>
+          <textarea class="hidden-links" id="f-images"></textarea>
+          <small>Файлы автоматически сжимаются перед сохранением, чтобы сайт не тормозил. Первая картинка станет обложкой.</small>
         </div>
       </div>
       <div class="modal-actions">
@@ -609,11 +713,11 @@ const CATS = {
 };
 
 const BUILTIN_IDEAS = [
-  {id:'jackbox', cat:'coop', emoji:'🎉', title:'Jackbox Party Pack', desc:'Играет стример с друзьями с телефонов, чат голосует за лучшие шутки и рисунки — заходит с любой частью.', tags:['вечеринка','голосование'], players:'3–8 человек', platform:'Steam + телефоны', duration:'30–60 мин'},
-  {id:'gartic', cat:'coop', emoji:'✏️', title:'Gartic Phone / Skribbl.io', desc:'Бесплатный «испорченный телефон» с рисунками — голосовой чат друзей во время игры сам себе готовые нарезки.', tags:['рисование','нарезки'], players:'4–12 человек', platform:'браузер', duration:'15–30 мин'},
-  {id:'geoguessr', cat:'coop', emoji:'🌍', title:'GeoGuessr', desc:'Угадываете локацию по Google Street View в коопе или на дуэли — чат обожает подсказывать или специально путать.', tags:['дуэль','чат участвует'], players:'1–4 человека', platform:'браузер', duration:'20–40 мин'},
-  {id:'lethal', cat:'coop', emoji:'👻', title:'Lethal Company / Phasmophobia', desc:'Кооп-хорроры с голосовым чатом — самый быстрый способ получить искренние крики и смешные моменты.', tags:['хоррор','кооп'], players:'2–4 человека', platform:'Steam', duration:'40–90 мин'},
-  {id:'liarsbar', cat:'coop', emoji:'🎲', title:"Liar's Bar / Buckshot Roulette", desc:'Простые игры на блеф с мультиплеером и стильной визуалкой — быстрые раунды, легко заходить и выходить.', tags:['блеф','короткие раунды'], players:'2–4 человека', platform:'Steam', duration:'15–30 мин'},
+  {id:'jackbox', cat:'coop', emoji:'🎉', title:'Jackbox Party Pack', desc:'Играет стример с друзьями с телефонов, чат голосует за лучшие шутки и рисунки — заходит с любой частью.', tags:['вечеринка','голосование'], players:'3–8 человек', platform:'Steam + телефоны', duration:'30–60 мин', images:['2x1_NSwitchDS_TheJackboxPartyBundle_image1600w.jpg']},
+  {id:'gartic', cat:'coop', emoji:'✏️', title:'Gartic Phone / Skribbl.io', desc:'Бесплатный «испорченный телефон» с рисунками — голосовой чат друзей во время игры сам себе готовые нарезки.', tags:['рисование','нарезки'], players:'4–12 человек', platform:'браузер', duration:'15–30 мин', images:['gartic-phone-button-1668215807194.webp']},
+  {id:'geoguessr', cat:'coop', emoji:'🌍', title:'GeoGuessr', desc:'Угадываете локацию по Google Street View в коопе или на дуэли — чат обожает подсказывать или специально путать.', tags:['дуэль','чат участвует'], players:'1–4 человека', platform:'браузер', duration:'20–40 мин', images:['images.jpg']},
+  {id:'lethal', cat:'coop', emoji:'👻', title:'Lethal Company / Phasmophobia', desc:'Кооп-хорроры с голосовым чатом — самый быстрый способ получить искренние крики и смешные моменты.', tags:['хоррор','кооп'], players:'2–4 человека', platform:'Steam', duration:'40–90 мин', images:['Phasmophobia_logo.jpg','ss_78075e9a94675823024f12fce9d69b243cca94f8.1920x1080.jpg']},
+  {id:'liarsbar', cat:'coop', emoji:'🎲', title:"Liar's Bar / Buckshot Roulette", desc:'Простые игры на блеф с мультиплеером и стильной визуалкой — быстрые раунды, легко заходить и выходить.', tags:['блеф','короткие раунды'], players:'2–4 человека', platform:'Steam', duration:'15–30 мин', images:['liars_bar-10.jpg','Buckshot_Roulette.jpg']},
   {id:'keeptalking', cat:'coop', emoji:'💣', title:'Keep Talking and Nobody Explodes', desc:'Один видит бомбу на экране, остальные с инструкцией на слух объясняют, как её разминировать. Хаос гарантирован.', tags:['на слух','тайминг'], players:'2+ человека', platform:'Steam / VR', duration:'20–40 мин'},
   {id:'makeitmeme', cat:'sites', emoji:'🖼️', title:'MakeItMeme', desc:'Сайт даёт случайные картинки — за ограниченное время придумываете подписи, потом голосуете все вместе.', tags:['мемы','голосование'], players:'2+ человека', platform:'браузер', duration:'10–20 мин'},
   {id:'tierlist', cat:'sites', emoji:'📊', title:'Tier List (Tiermaker)', desc:'Совместные тир-листы на любую тему: фастфуд, аниме, бесящие типы людей — можно даже локальные мемы чата.', tags:['обсуждение','рейтинг'], players:'1+ человек', platform:'браузер', duration:'10–25 мин'},
@@ -622,7 +726,13 @@ const BUILTIN_IDEAS = [
   {id:'akinator', cat:'chat', emoji:'🧞', title:'Акинатор против стримера', desc:'Чат загадывает персонажа (или самого стримера), а стример с друзьями пытаются угадать его по вопросам Акинатора.', tags:['чат загадывает'], players:'1+ человек', platform:'браузер', duration:'10–15 мин'},
   {id:'setups', cat:'chat', emoji:'🖥️', title:'Смотрим и оцениваем', desc:'Зрители присылают фото сетапов, рабочих столов или котиков через форму или Discord — стрим с друзьями это оценивает в эфире.', tags:['зрители присылают'], players:'1+ человек', platform:'Discord/форма', duration:'15–30 мин'},
   {id:'truthordare', cat:'chat', emoji:'⚔️', title:'Правда или дезертирство', desc:'Играете в любую обычную игру, но каждая смерть или проигрыш — это ответ на каверзный вопрос из чата.', tags:['штрафы','вопросы из чата'], players:'1+ человек', platform:'любая игра', duration:'весь стрим'},
-  {id:'tests', cat:'chat', emoji:'📝', title:'Дурацкие тесты', desc:'Проходите тесты вроде «какой ты покемон» или «сдашь ли ЕГЭ без подготовки» и спорите над каждым вопросом.', tags:['обсуждение','короткий формат'], players:'1+ человек', platform:'браузер', duration:'10–20 мин'}
+  {id:'tests', cat:'chat', emoji:'📝', title:'Дурацкие тесты', desc:'Проходите тесты вроде «какой ты покемон» или «сдашь ли ЕГЭ без подготовки» и спорите над каждым вопросом.', tags:['обсуждение','короткий формат'], players:'1+ человек', platform:'браузер', duration:'10–20 мин'},
+  {id:'content-warning', cat:'coop', emoji:'📹', title:'Content Warning', desc:'Команда снимает страшные моменты ради просмотров внутри игры: можно устроить конкурс, чей выпуск набрал больше хайпа.', tags:['кооп','хоррор','нарезки'], players:'2–4 человека', platform:'Steam', duration:'30–60 мин', images:['header.jpg']},
+  {id:'amongus', cat:'coop', emoji:'🚀', title:'Among Us с наказаниями', desc:'Классика на предательство, но с условиями от чата: говорить только вопросами, защищаться без слова «я», играть роль персонажа.', tags:['мафия','чат придумывает'], players:'5–10 человек', platform:'Steam / mobile', duration:'30–90 мин'},
+  {id:'plateup', cat:'coop', emoji:'🍳', title:'PlateUp! / Overcooked', desc:'Кулинарный хаос для компании: чат выбирает правила ресторана, а команда пытается не развалиться на ровном месте.', tags:['кооп','хаос'], players:'2–4 человека', platform:'Steam', duration:'30–60 мин', images:['41VcjPSfjwL.png']},
+  {id:'guess-song', cat:'chat', emoji:'🎧', title:'Угадай песню / саундтрек', desc:'Модер включает короткие фрагменты, стример и друзья угадывают, а чат ведёт счёт и подкидывает темы для раундов.', tags:['музыка','викторина'], players:'1+ человек', platform:'Discord / браузер', duration:'20–40 мин'},
+  {id:'chat-build', cat:'chat', emoji:'🧱', title:'Чат строит билд', desc:'В любой игре чат голосует за оружие, перки, персонажа или маршрут. Стример обязан прожить с этим выбором хотя бы один раунд.', tags:['голосование','челлендж'], players:'1+ человек', platform:'любая игра', duration:'весь стрим'},
+  {id:'steam-demo-night', cat:'sites', emoji:'🛒', title:'Вечер демоверсий Steam', desc:'Берёте 5–7 коротких демо, после каждой чат ставит оценку, а лучшие попадают в будущий стрим.', tags:['поиск игр','оценки'], players:'1+ человек', platform:'Steam', duration:'60–120 мин'}
 ];
 
 const LOCAL_KEY = 'stream-ideas-board:custom';
@@ -630,6 +740,8 @@ const FAV_KEY = 'stream-ideas-board:favs';
 const PLAYED_KEY = 'stream-ideas-board:played';
 const EDIT_KEY = 'stream-ideas-board:edits';
 const DELETED_KEY = 'stream-ideas-board:deleted';
+const RATING_KEY = 'stream-ideas-board:ratings';
+const TIER_KEY = 'stream-ideas-board:tierlist';
 
 function loadJSON(key, fallback){
   try{ const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; }catch(e){ return fallback; }
@@ -651,6 +763,7 @@ function buildIdeas(){
 let ideas = buildIdeas();
 let favs = new Set(loadJSON(FAV_KEY, []));
 let played = new Set(loadJSON(PLAYED_KEY, []));
+let ratings = loadJSON(RATING_KEY, {});
 
 let activeCats = new Set();
 let query = '';
@@ -741,8 +854,9 @@ document.querySelectorAll('.nav-tab').forEach(btn=>{
     document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     const v = btn.dataset.view;
-    document.getElementById('view-board').classList.toggle('active', v==='board');
-    document.getElementById('view-roulette').classList.toggle('active', v==='roulette');
+    document.querySelectorAll('.view-panel').forEach(panel=>panel.classList.remove('active'));
+    document.getElementById(`view-${v}`)?.classList.add('active');
+    if(v==='tierlist') renderTierlist();
   });
 });
 
@@ -793,6 +907,19 @@ function mediaHtml(idea){
   return `<div class="card-media"><svg class="icon media-icon"><use href="#${icon}"/></svg></div>`;
 }
 
+function ratingHtml(idea, isPlayed){
+  if(!isPlayed) return '';
+  const value = Number(ratings[idea.id] || 0);
+  const stars = [1,2,3,4,5].map(n=>{
+    const fill = Math.max(0, Math.min(1, value - (n - 1))) * 100;
+    return `<button class="rating-star" data-id="${idea.id}" data-star="${n}" style="--fill:${fill}%" title="Оценить до ${n}"></button>`;
+  }).join('');
+  return `<div class="rating-row">
+    <span class="rating-label">Оценка после игры</span>
+    <div class="rating-control" data-id="${idea.id}">${stars}<span class="rating-value">${value ? value.toFixed(1).replace('.0','') : '—'}</span></div>
+  </div>`;
+}
+
 function render(){
   const list = filtered();
   countEl.textContent = list.length ? `${list.length} ${pluralize(list.length)} на доске` : '';
@@ -822,6 +949,7 @@ function render(){
           <p class="card-desc">${escapeHtml(idea.desc)}</p>
           ${meta.length ? `<div class="meta-row">${meta.join('')}</div>` : ''}
           ${idea.tags && idea.tags.length ? `<div class="tags">${idea.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+          ${ratingHtml(idea, isPlayed)}
           <div class="card-foot">
             ${idea.link ? `<a class="card-link" href="${escapeAttr(idea.link)}" target="_blank" rel="noopener">Открыть<svg class="icon"><use href="#icon-external"/></svg></a>` : '<span></span>'}
             <button class="edit-link" data-id="${idea.id}"><svg class="icon"><use href="#icon-pencil"/></svg>Изменить</button>
@@ -840,6 +968,15 @@ function render(){
     const id=b.dataset.id;
     played.has(id)?played.delete(id):played.add(id);
     saveJSON(PLAYED_KEY,[...played]);
+    render();
+    renderTierlist();
+  }));
+  grid.querySelectorAll('.rating-star').forEach(b=>b.addEventListener('click', e=>{
+    const id = b.dataset.id;
+    const rect = b.getBoundingClientRect();
+    const half = (e.clientX - rect.left) <= rect.width / 2 ? 0.5 : 1;
+    ratings[id] = Number(b.dataset.star) - 1 + half;
+    saveJSON(RATING_KEY, ratings);
     render();
   }));
   grid.querySelectorAll('.edit-link').forEach(b=>b.addEventListener('click', ()=>{
@@ -927,10 +1064,76 @@ const modalTitle = document.getElementById('modalTitle');
 const modalSub = document.getElementById('modalSub');
 const submitBtn = document.getElementById('submitBtn');
 const deleteBtn = document.getElementById('deleteBtn');
+const uploadInput = document.getElementById('f-upload');
+const uploadPreview = document.getElementById('uploadPreview');
+const hiddenImagesField = document.getElementById('f-images');
+const imageLinksField = document.getElementById('f-image-links');
+
+function getImageList(){
+  const stored = hiddenImagesField.value.split('\n').map(t=>t.trim()).filter(Boolean);
+  const links = imageLinksField.value.split('\n').map(t=>t.trim()).filter(Boolean);
+  return [...stored, ...links];
+}
+
+function setImageList(images){
+  const stored = (images || []).filter(src=>src.startsWith('data:image/'));
+  const links = (images || []).filter(src=>!src.startsWith('data:image/'));
+  hiddenImagesField.value = stored.join('\n');
+  imageLinksField.value = links.join('\n');
+  renderUploadPreview(images || []);
+}
+
+function renderUploadPreview(images){
+  uploadPreview.innerHTML = images.slice(0, 10).map(src=>`<img src="${escapeAttr(src)}" alt="">`).join('');
+}
+
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = ()=>{
+        const maxSide = 960;
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        const ctx = canvas.getContext('2d', {alpha:false});
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.76));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+uploadInput.addEventListener('change', async ()=>{
+  const files = [...uploadInput.files].filter(file=>file.type.startsWith('image/')).slice(0, 8);
+  if(!files.length) return;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Сжимаю...';
+  try{
+    const compressed = await Promise.all(files.map(compressImage));
+    hiddenImagesField.value = [...hiddenImagesField.value.split('\n').filter(Boolean), ...compressed].join('\n');
+    renderUploadPreview(getImageList());
+    showToast(`Загружено ${files.length} ${files.length===1 ? 'картинка' : 'картинки'}`);
+  }catch(e){
+    showToast('Не получилось загрузить картинку');
+  }finally{
+    submitBtn.disabled = false;
+    submitBtn.textContent = editingId ? 'Сохранить' : 'Добавить';
+    uploadInput.value = '';
+  }
+});
+imageLinksField.addEventListener('input', ()=>renderUploadPreview(getImageList()));
 
 function openAdd(){
   editingId = null;
   document.getElementById('ideaForm').reset();
+  setImageList([]);
   document.getElementById('f-cat').value = 'coop';
   modalTitle.textContent = 'Новая идея';
   modalSub.textContent = SHARED_ENABLED ? 'Она появится на доске у всех, кто открывает сайт.' : 'Она сохранится в этом браузере (общая доска не настроена).';
@@ -952,7 +1155,7 @@ function openEdit(id){
   document.getElementById('f-platform').value = idea.platform || '';
   document.getElementById('f-link').value = idea.link || '';
   document.getElementById('f-tags').value = (idea.tags||[]).join(', ');
-  document.getElementById('f-images').value = (idea.images||[]).join('\n');
+  setImageList(idea.images || []);
   modalTitle.textContent = 'Редактировать идею';
   modalSub.textContent = SHARED_ENABLED ? 'Изменения применятся на общей доске.' : 'Изменения сохранятся в этом браузере.';
   submitBtn.textContent = 'Сохранить';
@@ -964,7 +1167,7 @@ document.getElementById('addBtn').addEventListener('click', openAdd);
 document.getElementById('cancelBtn').addEventListener('click', closeModal);
 document.getElementById('closeModalBtn').addEventListener('click', closeModal);
 backdrop.addEventListener('click', e=>{ if(e.target===backdrop) closeModal(); });
-function closeModal(){ backdrop.classList.remove('open'); document.getElementById('ideaForm').reset(); editingId=null; }
+function closeModal(){ backdrop.classList.remove('open'); document.getElementById('ideaForm').reset(); setImageList([]); editingId=null; }
 
 document.getElementById('ideaForm').addEventListener('submit', async e=>{
   e.preventDefault();
@@ -977,7 +1180,7 @@ document.getElementById('ideaForm').addEventListener('submit', async e=>{
   const duration = document.getElementById('f-duration').value.trim();
   const platform = document.getElementById('f-platform').value.trim();
   const link = document.getElementById('f-link').value.trim();
-  const images = document.getElementById('f-images').value.split('\n').map(t=>t.trim()).filter(Boolean);
+  const images = getImageList();
   if(!title || !desc) return;
 
   if(editingId){
@@ -1118,6 +1321,92 @@ function showResult(idea){
   resultCard.classList.add('show');
 }
 
+/* ---- tierlist ---- */
+const TIER_ROWS = [
+  {rank:'S', color:'#ff6f91'},
+  {rank:'A', color:'#ffcf5c'},
+  {rank:'B', color:'#5ee6c0'},
+  {rank:'C', color:'#8fb7ff'},
+  {rank:'D', color:'#ada0cf'}
+];
+const tierBoard = document.getElementById('tierBoard');
+const tierPool = document.getElementById('tierPool');
+let tierItems = loadJSON(TIER_KEY, []);
+
+function saveTier(){
+  saveJSON(TIER_KEY, tierItems);
+}
+
+function renderTierlist(){
+  if(!tierBoard || !tierPool) return;
+  tierBoard.innerHTML = TIER_ROWS.map(row=>{
+    const items = tierItems.filter(item=>item.rank===row.rank);
+    return `<div class="tier-row">
+      <div class="tier-label" style="background:${row.color}">${row.rank}</div>
+      <div class="tier-items" data-rank="${row.rank}">
+        ${items.map(item=>`<button class="tier-chip" data-id="${escapeAttr(item.id)}" title="Удалить из тирлиста">${escapeHtml(item.title)}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  tierPool.innerHTML = ideas.map(idea=>{
+    const inTier = tierItems.some(item=>item.id===idea.id);
+    const suffix = played.has(idea.id) ? ' ✓' : '';
+    return `<button class="tier-chip" data-title="${escapeAttr(idea.title)}" ${inTier ? 'style="opacity:.55"' : ''}>${escapeHtml(idea.title + suffix)}</button>`;
+  }).join('');
+
+  tierBoard.querySelectorAll('.tier-chip').forEach(btn=>btn.addEventListener('click', ()=>{
+    tierItems = tierItems.filter(item=>item.id!==btn.dataset.id);
+    saveTier();
+    renderTierlist();
+    showToast('Игра удалена из тирлиста');
+  }));
+  tierPool.querySelectorAll('.tier-chip').forEach(btn=>btn.addEventListener('click', ()=>{
+    document.getElementById('tierGameName').value = btn.dataset.title || btn.textContent.replace(' ✓','');
+    document.getElementById('tierGameName').focus();
+  }));
+}
+
+document.getElementById('tierForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const title = document.getElementById('tierGameName').value.trim();
+  const rank = document.getElementById('tierRank').value;
+  if(!title) return;
+  const matchedIdea = ideas.find(idea=>idea.title.toLowerCase()===title.toLowerCase());
+  const id = matchedIdea ? matchedIdea.id : 'tier-'+title.toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'-').replace(/^-|-$/g,'')+'-'+Date.now();
+  const nextItem = {id, title, rank};
+  const existing = tierItems.findIndex(item=>item.id===id || item.title.toLowerCase()===title.toLowerCase());
+  if(existing > -1) tierItems[existing] = nextItem;
+  else tierItems.push(nextItem);
+  saveTier();
+  e.target.reset();
+  renderTierlist();
+  showToast('Тирлист сохранён');
+});
+
+document.getElementById('seedPlayedBtn').addEventListener('click', ()=>{
+  let added = 0;
+  [...played].forEach(id=>{
+    const idea = ideas.find(i=>i.id===id);
+    if(idea && !tierItems.some(item=>item.id===id)){
+      tierItems.push({id, title:idea.title, rank:'B'});
+      added++;
+    }
+  });
+  saveTier();
+  renderTierlist();
+  showToast(added ? `Добавлено: ${added}` : 'Все отмеченные уже в тирлисте');
+});
+
+document.getElementById('clearTierBtn').addEventListener('click', ()=>{
+  if(!tierItems.length) return;
+  if(!confirm('Очистить весь тирлист?')) return;
+  tierItems = [];
+  saveTier();
+  renderTierlist();
+  showToast('Тирлист очищен');
+});
+
 /* ---- init ---- */
 document.getElementById('footerNote').innerHTML = (SHARED_ENABLED
   ? 'Доска общая: идеи, которые добавляют зрители или другие модеры, видны всем.'
@@ -1126,6 +1415,7 @@ document.getElementById('footerNote').innerHTML = (SHARED_ENABLED
 
 buildChips();
 render();
+renderTierlist();
 reelTrack.innerHTML = ideas.slice(0,3).map(reelItemHtml).join('');
 
 (async ()=>{
@@ -1135,6 +1425,7 @@ reelTrack.innerHTML = ideas.slice(0,3).map(reelItemHtml).join('');
   const known = new Set(ideas.map(i=>i.id));
   shared.forEach(s=>{ if(!known.has(s.id)) ideas.push(s); });
   render();
+  renderTierlist();
 })();
 </script>
 </body>
