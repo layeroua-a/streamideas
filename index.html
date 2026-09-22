@@ -209,6 +209,7 @@
   .card-actions button:hover{transform:scale(1.08);}
   .card-actions .fav-btn.active{background:var(--accent);color:var(--accent-ink);}
   .card-actions .played-btn.active{background:var(--accent-2);color:#04231c;}
+  .card-actions .delete-card-btn:hover{background:var(--danger);color:#fff;}
 
   .card-body{padding:16px 17px 17px;display:flex;flex-direction:column;gap:9px;flex:1;}
   .cat-badge{
@@ -347,7 +348,13 @@
   .upload-copy{display:flex;align-items:center;gap:10px;color:var(--text-dim);font-size:13px;}
   .upload-copy .icon{color:var(--accent-2);}
   .upload-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-  .upload-preview img{width:64px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--border);}
+  .upload-thumb{position:relative;width:72px;height:52px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--bg-2);}
+  .upload-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .upload-remove{
+    position:absolute;top:4px;right:4px;width:22px;height:22px;border:none;border-radius:999px;
+    background:rgba(8,4,16,.74);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .upload-remove .icon{width:12px;height:12px;}
   .hidden-links{display:none;}
   .modal-actions{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:10px;}
   .btn{
@@ -384,34 +391,34 @@
   .view-panel.active{display:block;}
 
   /* ---------- TIERLIST ---------- */
-  .tier-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start;}
+  .tier-layout{display:flex;flex-direction:column;gap:18px;}
   .tier-board{border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--panel);}
-  .tier-row{display:grid;grid-template-columns:74px 1fr;min-height:86px;border-bottom:1px solid var(--border);}
+  .tier-row{display:grid;grid-template-columns:74px 1fr;min-height:100px;border-bottom:1px solid var(--border);}
   .tier-row:last-child{border-bottom:none;}
   .tier-label{
     display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;
     font-size:24px;font-weight:800;color:#140d22;
   }
-  .tier-items{display:flex;flex-wrap:wrap;gap:9px;align-content:flex-start;padding:12px;background:rgba(255,255,255,.025);}
-  .tier-chip{
-    background:var(--bg-2);border:1px solid var(--border-hi);border-radius:999px;color:var(--text);
-    padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;
-  }
-  .tier-chip:hover{border-color:var(--accent-2);}
-  .tier-side{
+  .tier-items{display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start;padding:12px;background:rgba(255,255,255,.025);}
+  .tier-items.drag-over{background:color-mix(in srgb, var(--accent-2) 12%, rgba(255,255,255,.025));}
+  .tier-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .tier-toolbar h2{font-size:16px;margin:0;}
+  .tier-toolbar p{margin:2px 0 0;color:var(--text-faint);font-size:12.5px;}
+  .tier-pool{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:12px;
     background:linear-gradient(165deg, var(--panel), var(--panel-2));border:1px solid var(--border);
-    border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;gap:14px;
+    border-radius:var(--radius-md);padding:14px;
   }
-  .tier-side h2{font-size:16px;margin:0;}
-  .tier-form{display:flex;flex-direction:column;gap:10px;}
-  .tier-form input,.tier-form select{
-    width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);
-    padding:10px 12px;border-radius:var(--radius-sm);font-size:13.5px;
+  .tier-card{
+    min-height:48px;background:var(--bg-2);border:1px solid var(--border-hi);border-radius:12px;
+    color:var(--text);padding:8px;cursor:grab;display:flex;align-items:center;gap:9px;text-align:left;
+    font-weight:700;font-size:12.5px;line-height:1.25;
   }
-  .tier-actions{display:flex;gap:8px;flex-wrap:wrap;}
-  .tier-actions .btn{padding:10px 14px;}
-  .tier-pool{display:flex;flex-wrap:wrap;gap:8px;max-height:230px;overflow:auto;padding-right:2px;}
-  .tier-help{font-size:12px;color:var(--text-faint);margin:0;}
+  .tier-card:active{cursor:grabbing;}
+  .tier-card:hover{border-color:var(--accent-2);}
+  .tier-card.is-placed{opacity:.48;}
+  .tier-card img{width:46px;height:36px;object-fit:cover;border-radius:7px;flex-shrink:0;background:var(--panel);}
+  .tier-card.no-image{justify-content:center;text-align:center;padding:12px;}
 
   .footer-note{margin-top:34px;font-size:12.5px;color:var(--text-faint);}
   .footer-note a{color:var(--accent-2);}
@@ -424,9 +431,9 @@
     .sidebar-foot{display:none;}
     .main{padding:26px 18px 50px;}
     .form-grid{grid-template-columns:1fr;}
-    .tier-layout{grid-template-columns:1fr;}
     .tier-row{grid-template-columns:58px 1fr;}
     .tier-label{font-size:20px;}
+    .tier-pool{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));}
   }
 </style>
 </head>
@@ -551,26 +558,14 @@
         </div>
         <div class="tier-layout">
           <div class="tier-board" id="tierBoard"></div>
-          <aside class="tier-side">
-            <h2>Добавить сыгранную игру</h2>
-            <form class="tier-form" id="tierForm">
-              <input type="text" id="tierGameName" placeholder="Название игры" required>
-              <select id="tierRank">
-                <option value="S">S — легенда стрима</option>
-                <option value="A">A — очень зашло</option>
-                <option value="B">B — норм, можно повторить</option>
-                <option value="C">C — на один раз</option>
-                <option value="D">D — лучше забыть</option>
-              </select>
-              <button class="btn btn-primary" type="submit">Сохранить</button>
-            </form>
-            <p class="tier-help">Можно нажать на игру в списке ниже, выбрать тир и сохранить. Клик по игре в самом тирлисте удаляет её.</p>
-            <div class="tier-actions">
-              <button class="btn btn-ghost" id="seedPlayedBtn" type="button">Добавить отмеченные</button>
-              <button class="btn btn-danger" id="clearTierBtn" type="button">Очистить</button>
+          <div class="tier-toolbar">
+            <div>
+              <h2>Варианты игр</h2>
+              <p>Перетащи игру снизу в нужный тир. Клик по игре в тире возвращает её вниз.</p>
             </div>
-            <div class="tier-pool" id="tierPool"></div>
-          </aside>
+            <button class="btn btn-primary" id="saveTierBtn" type="button">Сохранить тирлист</button>
+          </div>
+          <div class="tier-pool" id="tierPool"></div>
         </div>
       </section>
 
@@ -942,6 +937,7 @@ function render(){
         <div class="card-actions">
           <button class="fav-btn ${isFav?'active':''}" data-id="${idea.id}" title="В избранное"><svg class="icon ${isFav?'filled':''}"><use href="#icon-star"/></svg></button>
           <button class="played-btn ${isPlayed?'active':''}" data-id="${idea.id}" title="Уже играли"><svg class="icon"><use href="#${isPlayed?'icon-check':'icon-square'}"/></svg></button>
+          <button class="delete-card-btn" data-id="${idea.id}" title="Удалить идею"><svg class="icon"><use href="#icon-trash"/></svg></button>
         </div>
         <div class="card-body">
           <span class="cat-badge"><svg class="icon"><use href="#${cat.icon}"/></svg>${cat.label}</span>
@@ -971,6 +967,7 @@ function render(){
     render();
     renderTierlist();
   }));
+  grid.querySelectorAll('.delete-card-btn').forEach(b=>b.addEventListener('click', ()=>deleteIdea(b.dataset.id)));
   grid.querySelectorAll('.rating-star').forEach(b=>b.addEventListener('click', e=>{
     const id = b.dataset.id;
     const rect = b.getBoundingClientRect();
@@ -1084,7 +1081,25 @@ function setImageList(images){
 }
 
 function renderUploadPreview(images){
-  uploadPreview.innerHTML = images.slice(0, 10).map(src=>`<img src="${escapeAttr(src)}" alt="">`).join('');
+  uploadPreview.innerHTML = images.slice(0, 10).map((src, index)=>`
+    <div class="upload-thumb">
+      <img src="${escapeAttr(src)}" alt="">
+      <button type="button" class="upload-remove" data-index="${index}" title="Удалить фото"><svg class="icon"><use href="#icon-x"/></svg></button>
+    </div>
+  `).join('');
+  uploadPreview.querySelectorAll('.upload-remove').forEach(btn=>btn.addEventListener('click', ()=>{
+    removeImageAt(Number(btn.dataset.index));
+  }));
+}
+
+function removeImageAt(index){
+  const stored = hiddenImagesField.value.split('\n').map(t=>t.trim()).filter(Boolean);
+  const links = imageLinksField.value.split('\n').map(t=>t.trim()).filter(Boolean);
+  if(index < stored.length) stored.splice(index, 1);
+  else links.splice(index - stored.length, 1);
+  hiddenImagesField.value = stored.join('\n');
+  imageLinksField.value = links.join('\n');
+  renderUploadPreview([...stored, ...links]);
 }
 
 function compressImage(file){
@@ -1220,13 +1235,21 @@ document.getElementById('ideaForm').addEventListener('submit', async e=>{
   }
 });
 
-deleteBtn.addEventListener('click', async ()=>{
-  if(!editingId) return;
+async function deleteIdea(id){
+  if(!id) return;
   if(!confirm('Удалить эту идею?')) return;
-  const id = editingId;
   ideas = ideas.filter(i=>i.id!==id);
+  favs.delete(id);
+  played.delete(id);
+  delete ratings[id];
+  tierItems = tierItems.filter(item=>item.id!==id);
+  saveJSON(FAV_KEY,[...favs]);
+  saveJSON(PLAYED_KEY,[...played]);
+  saveJSON(RATING_KEY, ratings);
+  saveTier();
   closeModal();
   render();
+  renderTierlist();
   if(SHARED_ENABLED){
     const ok = await deleteShared(id);
     showToast(ok ? 'Идея удалена с общей доски' : 'Не удалось удалить на сервере — идея скрыта только у тебя');
@@ -1235,7 +1258,9 @@ deleteBtn.addEventListener('click', async ()=>{
     hideLocally(id);
     showToast('Идея удалена');
   }
-});
+}
+
+deleteBtn.addEventListener('click', ()=>deleteIdea(editingId));
 
 function showToast(msg){
   const t = document.getElementById('toast');
@@ -1331,10 +1356,44 @@ const TIER_ROWS = [
 ];
 const tierBoard = document.getElementById('tierBoard');
 const tierPool = document.getElementById('tierPool');
-let tierItems = loadJSON(TIER_KEY, []);
+const saveTierBtn = document.getElementById('saveTierBtn');
+let tierItems = loadJSON(TIER_KEY, []).filter(item=>item && item.id && item.rank);
 
 function saveTier(){
   saveJSON(TIER_KEY, tierItems);
+}
+
+function ideaImage(idea){
+  return idea && idea.images && idea.images.length ? idea.images[0] : '';
+}
+
+function tierItemMeta(id){
+  const idea = ideas.find(i=>i.id===id);
+  const saved = tierItems.find(item=>item.id===id);
+  return {
+    id,
+    title: idea ? idea.title : (saved && saved.title) || 'Без названия',
+    image: ideaImage(idea)
+  };
+}
+
+function tierCardHtml(meta, extraClass=''){
+  const image = meta.image ? `<img src="${escapeAttr(meta.image)}" alt="">` : '';
+  const noImage = meta.image ? '' : ' no-image';
+  return `<button class="tier-card${noImage} ${extraClass}" draggable="true" data-id="${escapeAttr(meta.id)}">
+    ${image}<span>${escapeHtml(meta.title)}</span>
+  </button>`;
+}
+
+function placeTierItem(id, rank){
+  if(!id || !rank) return;
+  const idea = ideas.find(i=>i.id===id);
+  const title = idea ? idea.title : (tierItems.find(item=>item.id===id)?.title || 'Без названия');
+  const existing = tierItems.findIndex(item=>item.id===id);
+  const next = {id, title, rank};
+  if(existing > -1) tierItems[existing] = next;
+  else tierItems.push(next);
+  renderTierlist();
 }
 
 function renderTierlist(){
@@ -1344,67 +1403,46 @@ function renderTierlist(){
     return `<div class="tier-row">
       <div class="tier-label" style="background:${row.color}">${row.rank}</div>
       <div class="tier-items" data-rank="${row.rank}">
-        ${items.map(item=>`<button class="tier-chip" data-id="${escapeAttr(item.id)}" title="Удалить из тирлиста">${escapeHtml(item.title)}</button>`).join('')}
+        ${items.map(item=>tierCardHtml(tierItemMeta(item.id))).join('')}
       </div>
     </div>`;
   }).join('');
 
   tierPool.innerHTML = ideas.map(idea=>{
     const inTier = tierItems.some(item=>item.id===idea.id);
-    const suffix = played.has(idea.id) ? ' ✓' : '';
-    return `<button class="tier-chip" data-title="${escapeAttr(idea.title)}" ${inTier ? 'style="opacity:.55"' : ''}>${escapeHtml(idea.title + suffix)}</button>`;
+    return tierCardHtml({id:idea.id, title:idea.title, image:ideaImage(idea)}, inTier ? 'is-placed' : '');
   }).join('');
 
-  tierBoard.querySelectorAll('.tier-chip').forEach(btn=>btn.addEventListener('click', ()=>{
+  tierBoard.querySelectorAll('.tier-card').forEach(btn=>btn.addEventListener('click', ()=>{
     tierItems = tierItems.filter(item=>item.id!==btn.dataset.id);
-    saveTier();
     renderTierlist();
-    showToast('Игра удалена из тирлиста');
+    showToast('Игра возвращена в варианты');
   }));
-  tierPool.querySelectorAll('.tier-chip').forEach(btn=>btn.addEventListener('click', ()=>{
-    document.getElementById('tierGameName').value = btn.dataset.title || btn.textContent.replace(' ✓','');
-    document.getElementById('tierGameName').focus();
+  tierPool.querySelectorAll('.tier-card').forEach(btn=>btn.addEventListener('click', ()=>{
+    placeTierItem(btn.dataset.id, 'B');
   }));
+
+  document.querySelectorAll('.tier-card').forEach(card=>card.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('text/plain', card.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
+  }));
+  tierBoard.querySelectorAll('.tier-items').forEach(row=>{
+    row.addEventListener('dragover', e=>{
+      e.preventDefault();
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('dragleave', ()=>row.classList.remove('drag-over'));
+    row.addEventListener('drop', e=>{
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      placeTierItem(e.dataTransfer.getData('text/plain'), row.dataset.rank);
+    });
+  });
 }
 
-document.getElementById('tierForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const title = document.getElementById('tierGameName').value.trim();
-  const rank = document.getElementById('tierRank').value;
-  if(!title) return;
-  const matchedIdea = ideas.find(idea=>idea.title.toLowerCase()===title.toLowerCase());
-  const id = matchedIdea ? matchedIdea.id : 'tier-'+title.toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'-').replace(/^-|-$/g,'')+'-'+Date.now();
-  const nextItem = {id, title, rank};
-  const existing = tierItems.findIndex(item=>item.id===id || item.title.toLowerCase()===title.toLowerCase());
-  if(existing > -1) tierItems[existing] = nextItem;
-  else tierItems.push(nextItem);
+saveTierBtn.addEventListener('click', ()=>{
   saveTier();
-  e.target.reset();
-  renderTierlist();
   showToast('Тирлист сохранён');
-});
-
-document.getElementById('seedPlayedBtn').addEventListener('click', ()=>{
-  let added = 0;
-  [...played].forEach(id=>{
-    const idea = ideas.find(i=>i.id===id);
-    if(idea && !tierItems.some(item=>item.id===id)){
-      tierItems.push({id, title:idea.title, rank:'B'});
-      added++;
-    }
-  });
-  saveTier();
-  renderTierlist();
-  showToast(added ? `Добавлено: ${added}` : 'Все отмеченные уже в тирлисте');
-});
-
-document.getElementById('clearTierBtn').addEventListener('click', ()=>{
-  if(!tierItems.length) return;
-  if(!confirm('Очистить весь тирлист?')) return;
-  tierItems = [];
-  saveTier();
-  renderTierlist();
-  showToast('Тирлист очищен');
 });
 
 /* ---- init ---- */
